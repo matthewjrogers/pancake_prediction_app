@@ -1,0 +1,82 @@
+body {
+  background: #fcfcfc;
+  margin: 0 15px;
+  padding-bottom: 20px;
+}
+#header {
+  text-align: left;
+  color: #000000;
+  background-image: url("www/pancake_header.png");
+  padding: 15px 0 15px;
+  border-bottom: 1px solid #ddd;
+  margin: 0 -30px 20px;
+  /* background taken from http://lea.verou.me/css3patterns/ */
+  /*
+  background: linear-gradient(45deg, #dca 12%, transparent 0, transparent 88%, #dca 0),
+    linear-gradient(135deg, transparent 37%, #a85 0, #a85 63%, transparent 0),
+    linear-gradient(45deg, transparent 37%, #dca 0, #dca 63%, transparent 0) #753;
+    background-size: 25px 25px;
+    */
+}
+
+#check_recipe{
+  border-color:#301934;
+  background-color:#b19cd9;
+}
+#help{
+  border-color:#301934;
+  background-color:#b19cd9;
+}
+.focus{
+  background-color:#b19cd9;
+}
+#title {
+  font-size: 4em;
+  margin-bottom: 5px;
+  padding-left: 20px;
+}
+
+#subsubtitle {
+  font-size: 1.3em;
+  padding-left: 20px;
+}
+
+#subsubtitle a {
+  color: #000000;
+  text-decoration: underline;
+}
+
+#titlePanel {
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 50px;
+}
+
+#leftPanel {
+  background: #fff;
+  font-size: 18px;
+}
+#info{
+  font-size: 16px;
+}
+.form-control.shiny-bound-input {
+  background: #f4f4f4;
+}
+.selectize-input {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.selectize-dropdown {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.selectize-dropdown-content {
+  max-height: 300px;
+  padding: 0;
+}
+
+.selectize-dropdown-content .option {
+  border-bottom: 1px dotted #ccc;
+}
