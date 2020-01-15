@@ -36,17 +36,39 @@ ui <- fluidPage(
              ), column(5),
              column(3,
                     align = 'right',
-                    actionBttn(
-                      inputId = "help",
-                      label = NULL,
-                      style = "simple", 
-                      # color = "primary",
-                      icon = icon("question-circle")
-                      )
-                    
+                        actionBttn(
+                          inputId = "help",
+                          label = NULL,
+                          style = "simple", 
+                          # color = "primary",
+                          icon = icon("question-circle")
                     )
+                    
+             )
            )
     ), column(9,
+              fluidRow(
+                column(5,
+                       align = 'right',
+                       pickerInput('servings',
+                                   "Servings",
+                                   choices = c(
+                                     "Don't Know",
+                                     as.character(seq(19)),
+                                     "20 +"),
+                                   selected = '8',
+                                   inline = TRUE,
+                                   width = '100%'
+                       )
+                       
+                )
+              ),
+              fluidRow(
+                column(5,
+                       align = 'center',
+                       hr()
+                )
+              ),
               fluidRow(uiOutput('inputs'))
     )
   ),

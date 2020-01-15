@@ -1,6 +1,8 @@
 server <- function(input, output, session){
   
   
+  # render input objects ----------------------------------------------------
+  # call module UI function for all non-null elements
   output$inputs <- renderUI(
     column(9,
            tagList(lapply(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)], function(id){
@@ -8,6 +10,38 @@ server <- function(input, output, session){
            }))
     )
   )
+  
+  # callModule for all non-null elements in reactive vales
+  observe({
+    lapply(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)], function(id){
+      callModule(ingredient_input, id, input_values, input_id = id)
+    })
+  })
+  
+  # NB: reactiveValues does not support removing a name once created. Setting a reactiveValue to NULL removes the value, 
+  # but retains the item name. This is convenient when you wish to initialize an element as NULL, less so when you want to
+  # dynamically alter reactiveValues lists. SOLUTION: set value to null, call only for names of non-null elements
+  
+  # add input ---------------------------------------------------------------
+  
+  observeEvent(input$add_input,{
+    if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) < 12){
+      
+      input_values[[paste0('input', utility_rvs$input_counter)]] <- data.table(ingredient = NA,
+                                                                               amount = NA,
+                                                                               unit = NA)
+      utility_rvs$input_counter <- utility_rvs$input_counter + 1
+      
+    } else {
+      sendSweetAlert(session = session,
+                     title = "Too many ingredients!",
+                     type = 'error',
+                     text = 'The app can only handle 12 ingredients at a time.'
+      )
+    }
+  })
+  
+  # render info section -----------------------------------------------------
   
   output$info <- renderUI(
     if(input$info_toggle == 'use'){
@@ -42,52 +76,30 @@ server <- function(input, output, session){
     }
   )
   
-  observe({
-    lapply(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)], function(id){
-      callModule(ingredient_input, id, input_values, input_id = id)
-    })
-  })
+  # predict pancakes --------------------------------------------------------
   
   observeEvent(input$check_recipe, {
-    if(!is.null(utility_rvs$pancake_counter)){
-      utility_rvs$pancake_counter <- utility_rvs$pancake_counter + 1
-    } else {utility_rvs$pancake_counter <- 1}
-    cat(utility_rvs$pancake_counter, "\n")
+    # process data
+    processed_recipe <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
+                                             input$servings
+                                             ))
+    cat(file = stderr(), str(processed_recipe), "\n")
+    
   })
   
   output$prediction <- renderUI({
     req(utility_rvs$pancake_counter)
     if(utility_rvs$pancake_counter %% 2 != 0){
-      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 8)
+      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 7)
     } else{
       ic <- sample(not_pancake_icons, 1)
       cat(ic, "\n")
-      valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 8)
+      valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 7)
     }
   })
   
   
-  # add input ---------------------------------------------------------------
-  
-  
-  observeEvent(input$add_input,{
-    if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) <= 12){
-      
-      cat('in!\n', utility_rvs$input_counter, '\n')
-      
-      input_values[[paste0('input', utility_rvs$input_counter)]] <- data.table(ingredient = NA,
-                                                                               amount = NA,
-                                                                               unit = NA)
-      utility_rvs$input_counter <- utility_rvs$input_counter + 1
-    } else{
-      sendSweetAlert(session = session,
-                     title = "Too many ingredients!",
-                     type = 'error',
-                     text = 'The app can only handle 12 ingredients at a time.'
-      )
-    }
-  })
-  
+
   # faq ---------------------------------------------------------------------
   
   observeEvent(input$help,{
@@ -102,8 +114,8 @@ server <- function(input, output, session){
            Categorize your ingredient as wet (e.g. cider, cottage cheese, beer) 
                      or dry (e.g. cocoa powder, powdered milk, pork crackling), 
                      and add it under 'Other Wet' or 'Other Dry' ingredients respectively.")),
-        strong(HTML("Does anyone really put <em>beer or pork</em> in their pancakes?")),
-        tags$ul(tagList(a(HTML('Yup'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/')))
+        strong(HTML("Does anyone really put beer or pork in their pancakes?")),
+        tags$ul(tagList(a(HTML('Yes'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/')))
       )
     )
     

@@ -72,5 +72,19 @@ ingredient_input <- function(input,
     cat(file = stderr(), "Remove ", input_id, "\n")
     ingredient_rvs[[input_id]] <- NULL
   })  
+
+# update reactive values --------------------------------------------------
+
+  observeEvent(input$ingredient, {
+    input_values[[input_id]][, ingredient := input$ingredient]
+  })
   
+  observeEvent(input$amount, {
+    input_values[[input_id]][, amount := input$amount]
+  })
+  
+  observeEvent(input$unit, {
+    input_values[[input_id]][, unit := input$unit]
+  })
+    
 }
