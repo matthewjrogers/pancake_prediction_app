@@ -11,6 +11,10 @@ library(caret)
 R.utils::sourceDirectory("modules")
 R.utils::sourceDirectory("functions")
 
+# load model objects ------------------------------------------------------
+load('model_objects/pancake_recipe.RDS')
+load('model_objects/pancake_rf.RDS')
+
 # global values -----------------------------------------------------------
 
 not_pancake_icons <- c('apple-alt', 'fish', 'lemon')
