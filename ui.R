@@ -6,9 +6,16 @@ ui <- fluidPage(
   tags$head(tags$link(href = "style.css", rel = "stylesheet"),
             tags$style(HTML("@import url('//fonts.googleapis.com/css?family=Montserrat:400,700,900');
                             #info{font-family: 'Montserrat'}
-                            #header{font-family: 'Montserrat';font-weight:700;},
+                            #header{font-family: 'Montserrat';font-weight:700;
+                                    background-image: url('large_icon.png');
+                                    background-repeat: no-repeat;
+                                    background-size: 8% !important;
+                                    background-position: right;
+                                    background-origin: padding-box;
+                                    };
                             .selected {background-color:#301934 !important;},
-                            '.nav-tabs>li.active>a{border-top:3px solid !important; border-top-color:#301934 !important;}
+                            
+                            'nav nav-tabs{color:#301934}
                             ;"))),
   div(id = "header",
       div(id = "title",
@@ -20,31 +27,13 @@ ui <- fluidPage(
   ),
   fluidRow(
     column(3,
-           uiOutput('info'),
-           fluidRow(
-             column(4,
-                    actionButton(
-                      inputId = "add_input",
-                      label = "Add Input", 
-                      icon = icon('plus')
-                    )
-             ), column(5),
-             column(3,
-                    align = 'right',
-                    actionBttn(
-                      inputId = "help",
-                      label = NULL,
-                      style = "simple", 
-                      # color = "primary",
-                      icon = icon("question-circle")
-                    )
-                    
-             )
-           )
+           uiOutput('info')
     ), column(9,
-              fluidRow(uiOutput('inputs'))
-    # )
-  )),
+              fluidRow(
+                uiOutput('inputs')
+                )
+  )
+  ),
   fluidRow(
     div(uiOutput('prediction'))
   )

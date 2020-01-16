@@ -6,11 +6,11 @@ body {
 
 #header {
   text-align: left;
-  color: #000000;
-  background-image: url("www/pancake_header.png");
-  padding: 15px 0 15px;
+  color: #ffffff;
+  padding: 15px 0 40px;
   border-bottom: 1px solid #ddd;
   margin: 0 -30px 20px;
+  background-color:#301934;
   /* background taken from http://lea.verou.me/css3patterns/ */
   /*
   background: linear-gradient(45deg, #dca 12%, transparent 0, transparent 88%, #dca 0),
@@ -20,11 +20,8 @@ body {
     */
 }
 
-/*menu>.active>a:focus{
-  background-color:#301934!important;
-}*/
-
 .form-horizontal .control-label {
+  font-family: 'Montserrat';
     padding-top: 7px;
     margin-bottom: 0;
     text-align: left;
@@ -36,6 +33,12 @@ body {
 #help{
   border-color:#301934;
   background-color:#b19cd9;
+}
+#add_input{
+  border-color:#301934;
+  background-color:#20b2aa;
+  /*background-color:#008080;*/
+  
 }
 .focus{
   background-color:#b19cd9;
@@ -52,7 +55,7 @@ body {
 }
 
 #subsubtitle a {
-  color: #000000;
+  color: #ffffff;
   text-decoration: underline;
 }
 
