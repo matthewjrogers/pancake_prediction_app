@@ -7,6 +7,7 @@ library(data.table)
 
 library(recipes)
 library(caret)
+library(ranger)
 
 R.utils::sourceDirectory("modules")
 R.utils::sourceDirectory("functions")
@@ -26,7 +27,9 @@ default_units       <- c('cup', 'tsp', 'tbsp', 'cup', 'egg', 'tbsp')
 # utility tracking object -------------------------------------------------
 
 utility_rvs <- reactiveValues(input_counter = 7,
-                              servings = 6)
+                              servings = 6,
+                              prediction = NULL
+                              )
 
 # create input tracking object --------------------------------------------
 

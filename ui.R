@@ -3,13 +3,16 @@ ui <- fluidPage(
   title = 'Probably Pancakes',
   shinyjs::useShinyjs(),
   useShinydashboard(),
-  tags$head(tags$link(href = "style.css", rel = "stylesheet")),
+  tags$head(tags$link(href = "style.css", rel = "stylesheet"),
+            tags$style(HTML("@import url('//fonts.googleapis.com/css?family=Montserrat');
+                            #info{font-family: 'Montserrat'}
+                            #header{font-family: 'Montserrat'}
+                            ;"))),
   div(id = "header",
       div(id = "title",
           "Probably Pancakes"
       ),
       div(id = "subsubtitle",
-          "Created by",
           tags$a(href = "http://www.unconquerablecuriosity.com/", "Matt J. Rogers")
       )
   ),
@@ -56,7 +59,7 @@ ui <- fluidPage(
                                      "Don't Know",
                                      as.character(seq(19)),
                                      "20 +"),
-                                   selected = '8',
+                                   selected = "6",
                                    inline = TRUE,
                                    width = '100%'
                        )

@@ -5,7 +5,7 @@ server <- function(input, output, session){
   # call module UI function for all non-null elements
   output$inputs <- renderUI(
     column(9,
-           tagList(lapply(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)], function(id){
+           tagList(lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
              do.call(ingredient_input_UI, list(id))
            }))
     )
@@ -79,27 +79,28 @@ server <- function(input, output, session){
   # predict pancakes --------------------------------------------------------
   
   observeEvent(input$check_recipe, {
+    set.seed(123)
     # process data
-    processed_recipe <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
-                                             input$servings
-                                             ))
-    cat(file = stderr(), str(processed_recipe), "\n")
+    processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
+                                                         input$servings))
+    
+    baked_pancakes <- bake(prepped_pancakes, processed_input_data)
+    utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
     
   })
   
   output$prediction <- renderUI({
-    req(utility_rvs$pancake_counter)
-    if(utility_rvs$pancake_counter %% 2 != 0){
+    req(utility_rvs$prediction)
+    if(utility_rvs$prediction == 'pancake'){
       valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 7)
     } else{
       ic <- sample(not_pancake_icons, 1)
-      cat(ic, "\n")
       valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 7)
     }
   })
   
   
-
+  
   # faq ---------------------------------------------------------------------
   
   observeEvent(input$help,{
