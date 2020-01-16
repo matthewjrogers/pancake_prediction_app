@@ -7,7 +7,8 @@ ui <- fluidPage(
             tags$style(HTML("@import url('//fonts.googleapis.com/css?family=Montserrat:400,700,900');
                             #info{font-family: 'Montserrat'}
                             #header{font-family: 'Montserrat';font-weight:700;},
-                            .selected {background-color:#301934 !important;}
+                            .selected {background-color:#301934 !important;},
+                            .nav-tabs{color: #301934}
                             ;"))),
   div(id = "header",
       div(id = "title",

@@ -4,9 +4,9 @@ server <- function(input, output, session){
   # render input objects ----------------------------------------------------
   # call module UI function for all non-null elements
   output$inputs <- renderUI(
-    column(6,
+    column(8,
            wellPanel(style = 'background-color:#fcfcfc !important;',
-             div(style = 'padding:15px; align:left;',
+             div(style = 'padding:5px; align:left;',
                  pickerInput('servings',
                              "Servings",
                              choices = c(
@@ -64,6 +64,7 @@ server <- function(input, output, session){
     tabsetPanel(
       tabPanel("Use the App",
                value = 'use',
+               style = ".nav-tabs{color:red}",
                div(style = 'padding:15px;',
                  strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
                  br(), br(),
