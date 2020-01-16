@@ -8,7 +8,7 @@ ui <- fluidPage(
                             #info{font-family: 'Montserrat'}
                             #header{font-family: 'Montserrat';font-weight:700;},
                             .selected {background-color:#301934 !important;},
-                            .nav-tabs{color: #301934}
+                            '.nav-tabs>li.active>a{border-top:3px solid !important; border-top-color:#301934 !important;}
                             ;"))),
   div(id = "header",
       div(id = "title",
@@ -42,28 +42,6 @@ ui <- fluidPage(
              )
            )
     ), column(9,
-              # fluidRow(
-              #   column(5,
-              #          align = 'right',
-              #          pickerInput('servings',
-              #                      "Servings",
-              #                      choices = c(
-              #                        "Don't Know",
-              #                        as.character(seq(19)),
-              #                        "20 +"),
-              #                      selected = "6",
-              #                      inline = TRUE,
-              #                      width = '100%'
-              #          )
-              #          
-              #   )
-              # ),
-              # fluidRow(
-              #   column(5,
-              #          align = 'center',
-              #          hr()
-              #   )
-              # ),
               fluidRow(uiOutput('inputs'))
     # )
   )),

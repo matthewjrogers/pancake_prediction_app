@@ -14,30 +14,30 @@ ingredient_input <- function(input,
              pickerInput(session$ns('ingredient'),
                          label = 'Ingredient',
                          choices = c("Baking Powder" = "baking_powder", 
-                                        "Baking Soda" = "baking_soda", 
-                                        "Butter" = "butter", 
-                                        "Eggs" = "eggs", 
-                                        "Flour" = "flour", 
-                                        "Fruit" = "fruit", 
-                                        "Milk" = "milk",         
-                                        "Nuts" = "nut", 
-                                        "Oil" = "oil", 
-                                        "Salt" = "salt", 
-                                        "Spices" = "spice", 
-                                        "Sugar" = "sugar", 
-                                        "Vanilla" = "vanilla", 
-                                        "Water" = "water", 
-                                        "Yeast" = "yeast",
-                                        "Buttermilk" = 'buttermilk', 
-                                        "Fruit Juice" = 'fruit_juice', 
-                                        "Yogurt" = 'yogurt', 
-                                        "Sour Cream" = 'sour_cream', 
-                                        "Other Wet Ingredient" = 'other_liquid',
-                                        "Other Dry Ingredient" = 'other_dry',
-                                        "Other Fat" = 'other_fat'
+                                     "Baking Soda" = "baking_soda", 
+                                     "Butter" = "butter", 
+                                     "Eggs" = "eggs", 
+                                     "Flour" = "flour", 
+                                     "Fruit" = "fruit", 
+                                     "Milk" = "milk",         
+                                     "Nuts" = "nut", 
+                                     "Oil" = "oil", 
+                                     "Salt" = "salt", 
+                                     "Spices" = "spice", 
+                                     "Sugar" = "sugar", 
+                                     "Vanilla" = "vanilla", 
+                                     "Water" = "water", 
+                                     "Yeast" = "yeast",
+                                     "Buttermilk" = 'buttermilk', 
+                                     "Fruit Juice" = 'fruit_juice', 
+                                     "Yogurt" = 'yogurt', 
+                                     "Sour Cream" = 'sour_cream', 
+                                     "Other Wet Ingredient" = 'other_liquid',
+                                     "Other Dry Ingredient" = 'other_dry',
+                                     "Other Fat" = 'other_fat'
                          ),
-                         selected = input_values[[input_id]]$ingredient,
-                         options = pickerOptions(liveSearch = TRUE)
+                         selected = input_values[[input_id]]$ingredient
+                         # options = pickerOptions(liveSearch = TRUE)
              )),
       column(3,
              numericInput(session$ns('amount'),
@@ -79,15 +79,21 @@ ingredient_input <- function(input,
   # update reactive values --------------------------------------------------
   
   observeEvent(input$ingredient, {
-    input_values[[input_id]][, ingredient := input$ingredient]
+    if(!is.null(input_values[[input_id]])){
+      input_values[[input_id]][, ingredient := input$ingredient]
+    }
   })
   
   observeEvent(input$amount, {
-    input_values[[input_id]][, amount := input$amount]
+    if(!is.null(input_values[[input_id]])){
+      input_values[[input_id]][, amount := input$amount]
+    }
   })
   
   observeEvent(input$unit, {
-    input_values[[input_id]][, unit := input$unit]
+    if(!is.null(input_values[[input_id]])){
+      input_values[[input_id]][, unit := input$unit]
+    }
   })
   
 }
