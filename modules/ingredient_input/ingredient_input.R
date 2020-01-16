@@ -8,7 +8,7 @@ ingredient_input <- function(input,
   # render inputs -----------------------------------------------------------
   
   output$ingredient_inputs <- renderUI(
-    column(8,
+    # column(8,
            fluidRow(
              column(3,
                     pickerInput(session$ns('ingredient'),
@@ -60,10 +60,14 @@ ingredient_input <- function(input,
                     )),
              column(3,
                     br(),
-                    div(style = "padding-top:5px; align:left",actionButton(session$ns('remove'), label = NULL, icon = icon('minus-circle')))
+                    div(style = "padding-top:5px; align:left",
+                        actionButton(session$ns('remove'), 
+                                     label = NULL, 
+                                     width = '100%',
+                                     icon = icon('minus-circle')))
              )
            )
-    )
+    # )
   )
   
   # delete input ------------------------------------------------------------

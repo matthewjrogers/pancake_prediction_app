@@ -4,10 +4,27 @@ server <- function(input, output, session){
   # render input objects ----------------------------------------------------
   # call module UI function for all non-null elements
   output$inputs <- renderUI(
-    column(9,
-           tagList(lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
+    column(6,
+           wellPanel(style = 'background-color:#fcfcfc !important;',
+             div(style = 'padding:15px; align:left;',
+                 pickerInput('servings',
+                             "Servings",
+                             choices = c(
+                               "Don't Know",
+                               as.character(seq(19)),
+                               "20 +"),
+                             selected = "6",
+                             inline = TRUE,
+                             width = '100%'
+                 ),
+                 br(),
+                 hr(),
+                 br(),
+             tagList(lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
              do.call(ingredient_input_UI, list(id))
            }))
+           )
+           )
     )
   )
   
@@ -44,36 +61,71 @@ server <- function(input, output, session){
   # render info section -----------------------------------------------------
   
   output$info <- renderUI(
-    if(input$info_toggle == 'use'){
-      div(
-        strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
-        br(), br(),
-        strong(HTML('Am I making <em>pancakes?</em>')),
-        br(), br(),
-        HTML("Fear no more! This app (probably) has answers!
-           <br>Enter a recipe in the inputs and click the button below to answer the all-important question - am I making pancakes? 
-            <br><br><em>For help using the app, click the question mark icon below</em>"),
-        br(), br(),
-        actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
+    tabsetPanel(
+      tabPanel("Use the App",
+               value = 'use',
+               div(style = 'padding:15px;',
+                 strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
+                 br(), br(),
+                 strong(HTML('Am I making <em>pancakes?</em>')),
+                 br(), br(),
+                 HTML("Fear no more! This app (probably) has answers!
+                        <br>Enter a recipe in the inputs and click the button below to answer the all-important question - am I making pancakes?
+                         <br><br><em>For help using the app, click the question mark icon below</em>"),
+                 br(), br(),
+                 actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
+               )
+      ),
+      tabPanel("About",
+               value = 'about',
+               div(style = 'padding:15px;',
+                 strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
+                 br(), br(),
+                 HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe.
+                     Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes,
+                          but trusting my tastebuds yielded much less project than the alternative."),
+                 br(), br(),
+                 strong('Method'),
+                 br(),
+                 'In the spring of 2018 I wrote a web-scraping program to collect recipes from allrecipes.com. I collected a total of 3,200 recipes,
+                     roughly 400 pancake recipes and 2,800 others.',
+                 br(), br(),
+                 paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
+                            For more on the process, visit '),
+                 tagList(a(HTML('my blog'), href = 'hhtp://www.unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;"))
+               )
       )
-    } else {
-      div(
-        strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
-        br(), br(),
-        HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe. 
-        Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes, 
-             but trusting my tastebuds yielded much less project than the alternative."),
-        br(), br(),
-        strong('Method'),
-        br(),
-        'In the spring of 2018 I wrote a web-scraping program to collect recipes from allrecipes.com. I collected a total of 3,200 recipes, 
-        roughly 400 pancake recipes and 2,800 others.',
-        br(), br(),
-        paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes. 
-               For more on the process, visit '),
-        tagList(a(HTML('my blog'), href = 'unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;"))
-      )
-    }
+    )
+    # if(input$info_toggle == 'use'){
+    #   div(
+    #     strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
+    #     br(), br(),
+    #     strong(HTML('Am I making <em>pancakes?</em>')),
+    #     br(), br(),
+    #     HTML("Fear no more! This app (probably) has answers!
+    #        <br>Enter a recipe in the inputs and click the button below to answer the all-important question - am I making pancakes? 
+    #         <br><br><em>For help using the app, click the question mark icon below</em>"),
+    #     br(), br(),
+    #     actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
+    #   )
+    # } else {
+    #   div(
+    #     strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
+    #     br(), br(),
+    #     HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe. 
+    #     Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes, 
+    #          but trusting my tastebuds yielded much less project than the alternative."),
+    #     br(), br(),
+    #     strong('Method'),
+    #     br(),
+    #     'In the spring of 2018 I wrote a web-scraping program to collect recipes from allrecipes.com. I collected a total of 3,200 recipes, 
+    #     roughly 400 pancake recipes and 2,800 others.',
+    #     br(), br(),
+    #     paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes. 
+    #            For more on the process, visit '),
+    #     tagList(a(HTML('my blog'), href = 'hhtp://www.unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;"))
+    #   )
+    # }
   )
   
   # predict pancakes --------------------------------------------------------
