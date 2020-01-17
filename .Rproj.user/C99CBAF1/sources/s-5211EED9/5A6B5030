@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1579226473649.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "5A6B5030",
+    "lastKnownWriteTime" : 1579226876,
+    "last_content_update" : 1579226876033,
+    "path" : "~/GitHub/pancake_prediction_app/server.R",
+    "project_path" : "server.R",
+    "properties" : {
+        "cursorPosition" : "6,13",
+        "scrollLine" : "3"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
