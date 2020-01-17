@@ -7,21 +7,23 @@ body {
 #header {
   text-align: left;
   color: #ffffff;
-  padding: 15px 0 40px;
+  padding: 20px 40px 40px 20px;
   border-bottom: 5px solid #20b2aa;
   margin: 0 -30px 20px;
   background-color:#381354;
-  /* background taken from http://lea.verou.me/css3patterns/ */
-  /*
-  background: linear-gradient(45deg, #dca 12%, transparent 0, transparent 88%, #dca 0),
-    linear-gradient(135deg, transparent 37%, #a85 0, #a85 63%, transparent 0),
-    linear-gradient(45deg, transparent 37%, #dca 0, #dca 63%, transparent 0) #753;
-    background-size: 25px 25px;
-    */
+  font-family: 'Montserrat';font-weight:700;
+  background-image: url('large_icon.png');
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: 7%;
+  background-position: right;
 }
 
+#info{font-family: 'Montserrat'}
+
+li a{color: #000000;}
+
 .form-horizontal .control-label {
-  font-family: 'Montserrat';
     padding-top: 7px;
     margin-bottom: 0;
     text-align: left;
@@ -59,16 +61,6 @@ body {
   text-decoration: underline;
 }
 
-#titlePanel {
-  margin: 10px 0;
-  font-weight: bold;
-  font-size: 50px;
-}
-
-#leftPanel {
-  background: #fff;
-  font-size: 18px;
-}
 #info{
   font-size: 16px;
 }

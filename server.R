@@ -143,10 +143,10 @@ server <- function(input, output, session){
   output$prediction <- renderUI({
     req(utility_rvs$prediction)
     if(utility_rvs$prediction == 'pancake'){
-      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 7)
+      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 12)
     } else{
       ic <- sample(not_pancake_icons, 1)
-      valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 7)
+      valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 12)
     }
   })
   
