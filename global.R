@@ -20,14 +20,14 @@ load('model_objects/pancake_rf.RDS')
 
 not_pancake_icons <- c('apple-alt', 'fish', 'lemon')
 
-default_ingredients <- c('flour', 'baking_powder', 'sugar', 'milk', 'egg', 'butter')
+default_ingredients <- c('flour', 'baking_powder', 'sugar', 'milk', 'eggs', 'butter')
 default_amounts     <- c(1.5, 3.5, 1, 1.25, 1, 3)
-default_units       <- c('cup', 'tsp', 'tbsp', 'cup', 'egg', 'tbsp')
+default_units       <- c('cup', 'tsp', 'tbsp', 'cup', 'eggs', 'tbsp')
 
 # utility tracking object -------------------------------------------------
 
 utility_rvs <- reactiveValues(input_counter = 7,
-                              servings = 6,
+                              servings = 10,
                               prediction = NULL
                               )
 

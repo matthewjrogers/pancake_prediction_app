@@ -134,16 +134,31 @@ server <- function(input, output, session){
     # process data
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
-    
     baked_pancakes <- bake(prepped_pancakes, processed_input_data)
     utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
-    
+    if(utility_rvs$prediction == 'pancake'){
+      sendSweetAlert(
+        session = session,
+        title = "Pancake!",
+        text = "You can relax - it's probably pancakes",
+        btn_colors = '#20b2aa',
+        type = "success"
+      )
+    } else {
+      sendSweetAlert(
+        session = session,
+        title = "Something else...",
+        text = "That doesn't seem to be pancakes",
+        btn_colors = '#b19cd9',
+        type = "error"
+      )
+    }
   })
   
   output$prediction <- renderUI({
     req(utility_rvs$prediction)
     if(utility_rvs$prediction == 'pancake'){
-      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), color = 'aqua', width = 12)
+      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), width = 12)
     } else{
       ic <- sample(not_pancake_icons, 1)
       valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 12)

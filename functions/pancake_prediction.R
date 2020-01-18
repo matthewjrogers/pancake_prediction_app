@@ -1,4 +1,3 @@
-
 process_recipe_input <- function(recipe_table, servings){
   setDT(recipe_table)
   

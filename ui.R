@@ -25,7 +25,4 @@ ui <- fluidPage(
                 )
   )
   )
-  # fluidRow(
-  #   div(uiOutput('prediction'))
-  # )
 )
