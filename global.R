@@ -18,7 +18,7 @@ load('model_objects/pancake_rf.RDS')
 
 # global values -----------------------------------------------------------
 
-not_pancake_icons <- c('apple-alt', 'fish', 'lemon')
+not_pancake_icons <- paste0(c('banana', 'bread', 'broccoli', 'muffin'), '.png')
 
 default_ingredients <- c('flour', 'baking_powder', 'sugar', 'milk', 'eggs', 'butter')
 default_amounts     <- c(1.5, 3.5, 1, 1.25, 1, 3)
@@ -28,7 +28,8 @@ default_units       <- c('cup', 'tsp', 'tbsp', 'cup', 'eggs', 'tbsp')
 
 utility_rvs <- reactiveValues(input_counter = 7,
                               servings = 10,
-                              prediction = NULL
+                              prediction = NULL,
+                              np_icon = sample(not_pancake_icons, 1)
                               )
 
 # create input tracking object --------------------------------------------
@@ -45,3 +46,6 @@ for(idx in seq(length(default_ingredients))){
 
 
 # Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+# Icons made by <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>
+# Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>,
+# Icons made by <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>

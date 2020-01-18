@@ -17,7 +17,6 @@ server <- function(input, output, session){
                                                 as.character(seq(19)),
                                                 "20 +"),
                                               selected = "10",
-                                              # inline = TRUE,
                                               width = '100%'
                                   )
                            ),
@@ -25,7 +24,7 @@ server <- function(input, output, session){
                            column(3,
                                     column(6,
                                            br(),
-                                           div(style = 'padding-top:4px;padding-left:5px;',
+                                           div(style = 'padding-top:4px;',
                                                actionBttn(
                                                  inputId = "add_input",
                                                  label = NULL,
@@ -36,12 +35,11 @@ server <- function(input, output, session){
                                     ),
                                     column(6,
                                            br(),
-                                           div(style = 'padding-top:4px;padding-right:5px;',
+                                           div(style = 'padding-top:4px;',
                                                actionBttn(
                                                  inputId = "help",
                                                  label = NULL,
                                                  style = "simple",
-                                                 # size = 'sm',
                                                  icon = icon("question-circle")
                                                ))
                                     )
@@ -92,7 +90,6 @@ server <- function(input, output, session){
     tabsetPanel(
       tabPanel("Use the App",
                value = 'use',
-               style = ".nav-tabs{color:red}",
                div(style = 'padding:15px;',
                    strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
                    br(), br(),
@@ -121,7 +118,12 @@ server <- function(input, output, session){
                    br(), br(),
                    paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
                             For more on the process, visit '),
-                   tagList(a(HTML('my blog'), href = 'hhtp://www.unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;"))
+                   tagList(a(HTML('my blog'), href = 'hhtps://www.unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;")),
+                   br(),hr(),
+                   HTML('Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, 
+                        <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a>,  
+                         <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>, and 
+                         <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
                )
       )
     )
@@ -130,7 +132,7 @@ server <- function(input, output, session){
   # predict pancakes --------------------------------------------------------
   
   observeEvent(input$check_recipe, {
-    set.seed(123)
+    # set.seed(123)
     # process data
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
@@ -168,24 +170,53 @@ server <- function(input, output, session){
     }
   })
   
+  output$prediction_boxes <- renderUI({
+    req(utility_rvs$prediction)
+    if(utility_rvs$prediction == 'pancake'){
+      custom_value_boxUI('is_pancake')
+    } else{
+      custom_value_boxUI('other')
+    }
+  })
+  callModule(custom_value_box,
+             'is_pancake',
+             color = '#20b2aa',
+             box_title = 'pancakes',
+             box_text = "That looks like pancakes!",
+             box_icon = 'pancakes.png'
+             )
+  callModule(custom_value_box,
+             'other',
+             color = '#b19cd9',
+             box_title = 'not pancakes',
+             box_text = "That doesn't look like pancakes ",
+             box_icon = utility_rvs$np_icon
+  )
   
-  
+  observeEvent(input$check_recipe,{
+    utility_rvs$np_icon <- sample(not_pancake_icons, 1)
+    cat(utility_rvs$np_icon, "\n")
+  })
   # faq ---------------------------------------------------------------------
   
   observeEvent(input$help,{
     showModal(
       modalDialog(
         title = strong("Recipe Input FAQs"),
+        strong("What if I don't know how many servings my recipe makes?"),
+        tags$ul(HTML("<li>That's an option you can select in the drop down menu. The app will randomly select a number of servings
+                servings between 6 and 12 (the range of most common values among recipes I collected).
+                Note that this may cause the app's prediction for a recipe to change.</li>")),
         strong("My recipe has flour, but it isn't wheat flour - where should I list it?"),
-        tags$ul("For the purposes of the model, it's all the same. Add it as flour"),
+        tags$ul(HTML("<li>For the purposes of the model, it's all the same. Add it as flour</li>")),
         strong("My ingredient is not listed - what should I do?"),
-        tags$ul(HTML("As you might expect, an exhaustive list of ingredient is not possible. However, 
-          it is important for the model to know the total volume of ingredients.<br>
-           Categorize your ingredient as wet (e.g. cider, cottage cheese, beer) 
-                     or dry (e.g. cocoa powder, powdered milk, pork crackling), 
-                     and add it under 'Other Wet' or 'Other Dry' ingredients respectively.")),
+        tags$ul(HTML("<li>As you might expect, an exhaustive list of ingredient is not possible. However, 
+          it is important for the model to know the total volume of ingredients.<br><br>
+           Categorize your ingredient as wet (e.g. cider, cottage cheese, beer), 
+                      dry (e.g. cocoa powder, powdered milk, pork crackling), or fat (e.g. margarine) 
+                     and add it under 'Other Wet' or 'Other Dry' ingredients respectively.</li>")),
         strong(HTML("Does anyone really put beer or pork in their pancakes?")),
-        tags$ul(tagList(a(HTML('Yes'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/')))
+        tags$ul(tagList(a(HTML('<li>Yes</li>'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/')))
       )
     )
     
