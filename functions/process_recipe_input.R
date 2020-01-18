@@ -8,7 +8,6 @@ process_recipe_input <- function(recipe_table, servings){
   } else {
     num_servings <- as.numeric(servings)
   }
-  
   # unit conversions to cups--excluding eggs and fruit (e.g. apples)
   conversion_tbl = data.table(unit = c('tsp', 'tbsp', 'cup', 'oz', 'egg', 'fruit'),
                               conversion = c(0.0208333, 0.0625, 1, 0.125, 1, 1)
@@ -26,6 +25,7 @@ process_recipe_input <- function(recipe_table, servings){
   std_amount_tbl <- conversion_tbl[recipe_table, on = 'unit']
   
   std_amount_tbl[, std_amount := amount*conversion]
+  std_amount_tbl = std_amount_tbl[, .(std_amount = sum(std_amount)), ingredient] # aggregate if user selects the same ingredient more than once
   std_amount_tbl[, id := 1]
   std_amount_tbl <- dcast(std_amount_tbl, id ~ ingredient, value.var = 'std_amount')
   std_amount_tbl[, id := NULL]

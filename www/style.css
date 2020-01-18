@@ -8,7 +8,7 @@ body {
 #header {
   text-align: left;
   color: #ffffff;
-  padding: 20px 40px 40px 20px;
+  padding: 20px 45px 30px 20px;
   border-bottom: 5px solid #20b2aa;
   margin: 0 -30px 20px;
   background-color:#381354;
@@ -16,7 +16,7 @@ body {
   background-image: url('large_icon.png');
   background-origin: content-box;
   background-repeat: no-repeat;
-  background-size: 7%;
+  background-size: 12%;
   background-position: right;
 }
 
@@ -90,4 +90,7 @@ li a{color: #000000;}
 
 h3 {
     font-family: 'Montserrat';
+    font-weight: 700;
+    font-size: 30px;
+    color: #ffffff;
 }

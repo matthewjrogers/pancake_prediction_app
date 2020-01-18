@@ -16,7 +16,7 @@ server <- function(input, output, session){
                                                 "Don't Know",
                                                 as.character(seq(19)),
                                                 "20 +"),
-                                              selected = "6",
+                                              selected = "10",
                                               # inline = TRUE,
                                               width = '100%'
                                   )
@@ -134,8 +134,11 @@ server <- function(input, output, session){
     # process data
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
+    
     baked_pancakes <- bake(prepped_pancakes, processed_input_data)
+    
     utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
+    
     if(utility_rvs$prediction == 'pancake'){
       sendSweetAlert(
         session = session,
