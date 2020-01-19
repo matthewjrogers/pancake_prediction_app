@@ -81,7 +81,7 @@ server <- function(input, output, session){
   
   output$info <- renderUI(
     tabsetPanel(
-      tabPanel("Use the App",
+      tabPanel("Predict",
                value = 'use',
                div(style = 'padding:15px;',
                    strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
@@ -95,7 +95,7 @@ server <- function(input, output, session){
                    actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
                )
       ),
-      tabPanel("About",
+      tabPanel("Origin",
                value = 'about',
                div(style = 'padding:15px;',
                    strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
@@ -118,7 +118,21 @@ server <- function(input, output, session){
                          <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>, and 
                          <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
                )
-      )
+      ),
+      tabPanel("What Matters",
+               value = 'model',
+               div(style = 'padding:15px',
+                   strong("What makes a pancake a pancake?"),
+                   br(), br(),
+                   HTML("The most important feature of a paancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
+                   This app will consistently predict that recipes with a high proportion of liquid (i.e. batters, rather than doughs) are pancakes. <br><br>Future iterations of the
+                   model may include data for other types of batters (e.g. brownies) or data about what constitues a baked good.
+                   After all, if you add enough water to a pancake recipe, it's no longer pancakes. It's soup."),
+                   br(), br(),
+                   "Other important variables include the number of servings (pancakes in the sample I collected tended to have a lower
+                   yield than other recipes), the proportion of fat in the recipe, and the amount of baking soda."
+                   )
+               )
     )
   )
   
