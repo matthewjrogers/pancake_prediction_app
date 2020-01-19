@@ -16,7 +16,7 @@ body {
   background-image: url('large_icon.png');
   background-origin: content-box;
   background-repeat: no-repeat;
-  background-size: 12%;
+  background-size: 6%;
   background-position: right;
 }
 
@@ -65,9 +65,7 @@ li a{color: #000000;}
 #info{
   font-size: 16px;
 }
-.form-control.shiny-bound-input {
-  background: #f4f4f4;
-}
+
 .selectize-input {
   font-size: 18px;
   line-height: 24px;

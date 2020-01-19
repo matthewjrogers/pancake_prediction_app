@@ -2,11 +2,9 @@
 ui <- fluidPage(
   title = 'Probably Pancakes',
   shinyjs::useShinyjs(),
-  useShinydashboard(),
   tags$head(tags$link(href = "style.css", rel = "stylesheet"),
             tags$style(HTML("@import url('//fonts.googleapis.com/css?family=Montserrat:200,400,700,900');
-                            .selected {background-color:#301934 !important;},
-                            ;"))),
+                            .selected {background-color:#301934 !important;};"))),
   div(id = "header",
       div(id = "title",
           "Probably Pancakes"

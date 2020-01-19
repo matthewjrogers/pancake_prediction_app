@@ -22,27 +22,27 @@ server <- function(input, output, session){
                            ),
                            column(3),
                            column(3,
-                                    column(6,
-                                           br(),
-                                           div(style = 'padding-top:4px;',
-                                               actionBttn(
-                                                 inputId = "add_input",
-                                                 label = NULL,
-                                                 style = "simple",
-                                                 # size = 'sm',
-                                                 icon = icon("plus-square")
-                                               ))
-                                    ),
-                                    column(6,
-                                           br(),
-                                           div(style = 'padding-top:4px;',
-                                               actionBttn(
-                                                 inputId = "help",
-                                                 label = NULL,
-                                                 style = "simple",
-                                                 icon = icon("question-circle")
-                                               ))
-                                    )
+                                  column(5,
+                                         div(style = 'padding-top:22px;float:left;',
+                                             actionBttn(
+                                               inputId = "add_input",
+                                               label = NULL,
+                                               style = "simple",
+                                               icon = icon("plus-square")
+                                             ))
+                                  ),
+                                  column(2,
+                                         div(style = "padding:20px")
+                                         ),
+                                  column(5,
+                                         div(style = 'padding-top:23px;float:right;',
+                                             actionBttn(
+                                               inputId = "help",
+                                               label = NULL,
+                                               style = "simple",
+                                               icon = icon("question-circle")
+                                             ))
+                                  )
                            )
                          ),
                          hr(),
@@ -97,7 +97,7 @@ server <- function(input, output, session){
                    br(), br(),
                    HTML("Fear no more! This app (probably) has answers!
                         <br><br>Enter a recipe in the inputs and click the button below to answer the all-important question - am I making pancakes?
-                         <br><br><em>For help using the app, click the question mark icon below</em>"),
+                         <br><br><em>To add more ingredients, click the green plus sign. For help using the app, click the question mark icon.</em>"),
                    br(), br(),
                    actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
                )
@@ -113,7 +113,7 @@ server <- function(input, output, session){
                    br(), br(),
                    strong('Method'),
                    br(),
-                   'In the spring of 2018 I wrote a web-scraping program to collect recipes from allrecipes.com. I collected a total of 3,200 recipes,
+                   'In the spring of 2018 I used R to collect recipes from allrecipes.com. I collected a total of 3,200 recipes,
                      roughly 400 pancake recipes and 2,800 others.',
                    br(), br(),
                    paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
@@ -132,15 +132,17 @@ server <- function(input, output, session){
   # predict pancakes --------------------------------------------------------
   
   observeEvent(input$check_recipe, {
-    # set.seed(123)
-    # process data
+    # process inputs to data frame
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
     
+    # apply recipe--center and scale data, remove near-zero-variance variables
     baked_pancakes <- bake(prepped_pancakes, processed_input_data)
     
+    # make prediction
     utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
     
+    # send an alert--let's user know something happened if they put in two consecutive pancakes/not pancakes
     if(utility_rvs$prediction == 'pancake'){
       sendSweetAlert(
         session = session,
@@ -160,16 +162,7 @@ server <- function(input, output, session){
     }
   })
   
-  output$prediction <- renderUI({
-    req(utility_rvs$prediction)
-    if(utility_rvs$prediction == 'pancake'){
-      valueBox('Pancakes', "That's (probably) a pancake!", icon = icon('cookie'), width = 12)
-    } else{
-      ic <- sample(not_pancake_icons, 1)
-      valueBox('Not Pancakes', "That's (probably) not pancakes", icon = icon(ic), color = 'maroon', width = 12)
-    }
-  })
-  
+  # render prediction output
   output$prediction_boxes <- renderUI({
     req(utility_rvs$prediction)
     if(utility_rvs$prediction == 'pancake'){
@@ -178,25 +171,30 @@ server <- function(input, output, session){
       custom_value_boxUI('other')
     }
   })
+  
   callModule(custom_value_box,
              'is_pancake',
              color = '#20b2aa',
              box_title = 'pancakes',
              box_text = "That looks like pancakes!",
              box_icon = 'pancakes.png'
-             )
-  callModule(custom_value_box,
-             'other',
-             color = '#b19cd9',
-             box_title = 'not pancakes',
-             box_text = "That doesn't look like pancakes ",
-             box_icon = utility_rvs$np_icon
   )
   
   observeEvent(input$check_recipe,{
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
-    cat(utility_rvs$np_icon, "\n")
+    
+    # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
+    # and it allows random icon selection
+    
+    callModule(custom_value_box,
+               'other',
+               color = '#b19cd9',
+               box_title = 'not pancakes',
+               box_text = "That doesn't look like pancakes ",
+               box_icon = utility_rvs$np_icon
+    )
   })
+  
   # faq ---------------------------------------------------------------------
   
   observeEvent(input$help,{
@@ -209,14 +207,21 @@ server <- function(input, output, session){
                 Note that this may cause the app's prediction for a recipe to change.</li>")),
         strong("My recipe has flour, but it isn't wheat flour - where should I list it?"),
         tags$ul(HTML("<li>For the purposes of the model, it's all the same. Add it as flour</li>")),
+        strong('When should I use the unit "Piece of Fruit" listed in the dropdown?'),
+        tags$ul(HTML("<li>If your recipe calls for a whole piece of fruit, without specifying volume (e.g. one sliced banana), use 'Piece of Fruit'.
+                     If your recipe does specify volume for the fruit (e.g. one cup of sliced banana) use the appropriate volumetric unit.</li>")),
         strong("My ingredient is not listed - what should I do?"),
         tags$ul(HTML("<li>As you might expect, an exhaustive list of ingredient is not possible. However, 
-          it is important for the model to know the total volume of ingredients.<br><br>
-           Categorize your ingredient as wet (e.g. cider, cottage cheese, beer), 
+                      it is important for the model to know the total volume of ingredients.<br><br>
+                      Categorize your ingredient as wet (e.g. cider, cottage cheese, beer), 
                       dry (e.g. cocoa powder, powdered milk, pork crackling), or fat (e.g. margarine) 
-                     and add it under 'Other Wet' or 'Other Dry' ingredients respectively.</li>")),
+                     and add it under 'Other Wet Ingredient', 'Other Dry Ingredient', or 'Other Fat' respectively.</li>")),
         strong(HTML("Does anyone really put beer or pork in their pancakes?")),
-        tags$ul(tagList(a(HTML('<li>Yes</li>'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/')))
+        tags$ul(tagList(a(HTML('<li>Yes</li>'), href = 'https://www.allrecipes.com/recipe/87685/beer-pancakes/'))),
+        strong("Why can't I choose grams as my unit of measure?"),
+        tags$ul(HTML("<li>Because grams are a measure of weight rather than volume. Volumetric proportions are important in the model at the heart of this app,
+                     and the conversion from grams to volume would vary greatly based on the ingredient in question. Rather than make assumptions about the conversion,
+                     I leave it to the user to make an accuarate translation into the appropriate units.</li>"))
       )
     )
     
