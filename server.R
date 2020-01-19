@@ -22,27 +22,20 @@ server <- function(input, output, session){
                            ),
                            column(3),
                            column(3,
-                                  column(5,
-                                         div(style = 'padding-top:22px;float:left;',
-                                             actionBttn(
-                                               inputId = "add_input",
-                                               label = NULL,
-                                               style = "simple",
-                                               icon = icon("plus-square")
-                                             ))
-                                  ),
-                                  column(2,
-                                         div(style = "padding:20px")
-                                         ),
-                                  column(5,
-                                         div(style = 'padding-top:23px;float:right;',
-                                             actionBttn(
-                                               inputId = "help",
-                                               label = NULL,
-                                               style = "simple",
-                                               icon = icon("question-circle")
-                                             ))
-                                  )
+                                  div(style = 'padding-top:22px;text-align:center;',
+                                      div(style = "display:inline-block",
+                                          actionBttn(
+                                            inputId = "add_input",
+                                            label = NULL,
+                                            style = "simple",
+                                            icon = icon("plus-square")
+                                          ), 
+                                          actionBttn(
+                                            inputId = "help",
+                                            label = NULL,
+                                            style = "simple",
+                                            icon = icon("question-circle")
+                                          )))
                            )
                          ),
                          hr(),

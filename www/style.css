@@ -36,12 +36,12 @@ li a{color: #000000;}
 #help{
   border-color:#301934;
   background-color:#b19cd9;
+  margin:2px;
 }
 #add_input{
   border-color:#301934;
   background-color:#20b2aa;
-  /*background-color:#008080;*/
-  
+  margin:2px;
 }
 .focus{
   background-color:#b19cd9;
