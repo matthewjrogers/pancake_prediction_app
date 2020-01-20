@@ -37,6 +37,9 @@ process_recipe_input <- function(recipe_table, servings){
   std_amount_tbl[, total_volume := rowSums(.SD, na.rm = TRUE)]
   std_amount_tbl[, total_liquid := rowSums(.SD, na.rm = TRUE), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% liquids]]
   std_amount_tbl[, total_fat:= rowSums(.SD, na.rm = TRUE), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% fats]]
+  std_amount_tbl[, total_fat := ifelse(is.na(total_fat), 0, total_fat)]
+  std_amount_tbl[, total_liquid := ifelse(is.na(total_liquid), 0, total_liquid)]
+  
   std_amount_tbl[, prop_liquid := total_liquid/total_volume]
   std_amount_tbl[, prop_fat := total_fat/total_volume]
   

@@ -130,7 +130,7 @@ server <- function(input, output, session){
                    br(), br(),
                    paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
                             For more on the process, visit '),
-                   tagList(a(HTML('my blog'), href = 'hhtps://www.unconquerablecuriosity.com', style = "color:#000000;text-decoration:underline;")),
+                   tagList(a(HTML('my blog'), href = 'http://www.unconquerablecuriosity.com/2020/01/17/probably-pancakes/', style = "color:#000000;text-decoration:underline;")),
                    br(),hr(),
                    HTML('Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, 
                         <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a>,  
