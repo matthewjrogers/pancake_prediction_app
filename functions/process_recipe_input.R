@@ -22,10 +22,10 @@ process_recipe_input <- function(recipe_table, servings){
                          "nut", "oil", "salt", "spice", "sugar", "vanilla", "water", "yeast", "total_volume",
                          "total_liquid", "prop_liquid", "total_fat", "prop_fat" )
   
-  std_amount_tbl <- conversion_tbl[recipe_table, on = 'unit']
+  std_amount_tbl <- conversion_tbl[recipe_table[!is.na(ingredient)], on = 'unit']
   
   std_amount_tbl[, std_amount := amount*conversion]
-  std_amount_tbl = std_amount_tbl[, .(std_amount = sum(std_amount)), ingredient] # aggregate if user selects the same ingredient more than once
+  std_amount_tbl = std_amount_tbl[, .(std_amount = sum(std_amount, na.rm = TRUE)), ingredient] # aggregate if user selects the same ingredient more than once
   std_amount_tbl[, id := 1]
   std_amount_tbl <- dcast(std_amount_tbl, id ~ ingredient, value.var = 'std_amount')
   std_amount_tbl[, id := NULL]
@@ -34,9 +34,9 @@ process_recipe_input <- function(recipe_table, servings){
   std_amount_tbl[, 1:ncol(std_amount_tbl) := lapply(.SD, function(c){c/num_servings})]
   
   #calculate total volume of recipe, total liquid, total fat, and proportions of each
-  std_amount_tbl[, total_volume := rowSums(.SD)]
-  std_amount_tbl[, total_liquid := rowSums(.SD), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% liquids]]
-  std_amount_tbl[, total_fat:= rowSums(.SD), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% fats]]
+  std_amount_tbl[, total_volume := rowSums(.SD, na.rm = TRUE)]
+  std_amount_tbl[, total_liquid := rowSums(.SD, na.rm = TRUE), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% liquids]]
+  std_amount_tbl[, total_fat:= rowSums(.SD, na.rm = TRUE), .SDcols = colnames(std_amount_tbl)[colnames(std_amount_tbl) %in% fats]]
   std_amount_tbl[, prop_liquid := total_liquid/total_volume]
   std_amount_tbl[, prop_fat := total_fat/total_volume]
   

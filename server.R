@@ -1,5 +1,24 @@
 server <- function(input, output, session){
   
+  #### reactive values ---------------------------------------------------------
+  
+  # utility tracking object -------------------------------------------------
+  
+  utility_rvs <- reactiveValues(input_counter = 7,
+                                servings = 10,
+                                prediction = NULL,
+                                np_icon = sample(not_pancake_icons, 1)
+  )
+  
+  # create input tracking object --------------------------------------------
+  
+  # initialize default values
+  for(idx in seq(length(default_ingredients))){
+    input_values[[paste0('input', idx)]] <- data.table(ingredient = default_ingredients[[idx]],
+                                                       amount = default_amounts[[idx]],
+                                                       unit = default_units[[idx]]
+    )
+  }   
   
   # render input objects ----------------------------------------------------
   # call module UI function for all non-null elements
@@ -131,8 +150,8 @@ server <- function(input, output, session){
                    br(), br(),
                    "Other important variables include the number of servings (pancakes in the sample I collected tended to have a lower
                    yield than other recipes), the proportion of fat in the recipe, and the amount of baking soda."
-                   )
                )
+      )
     )
   )
   
