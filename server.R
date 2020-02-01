@@ -1,24 +1,31 @@
 server <- function(input, output, session){
   
   #### reactive values ---------------------------------------------------------
-  
   # utility tracking object -------------------------------------------------
   
   utility_rvs <- reactiveValues(input_counter = 7,
-                                servings = 10,
+                                servings = 8,
                                 prediction = NULL,
                                 np_icon = sample(not_pancake_icons, 1)
   )
   
   # create input tracking object --------------------------------------------
   
-  # initialize default values
   for(idx in seq(length(default_ingredients))){
-    input_values[[paste0('input', idx)]] <- data.table(ingredient = default_ingredients[[idx]],
-                                                       amount = default_amounts[[idx]],
-                                                       unit = default_units[[idx]]
-    )
-  }   
+    # important to define rvs here rather than in global, as it is undesirable to share 'ingredient states' between sessions
+    if(exists('input_values')){
+      input_values[[paste0('input', idx)]] <- data.table(ingredient = default_ingredients[[idx]],
+                                                         amount = default_amounts[[idx]],
+                                                         unit = default_units[[idx]]
+      )
+    } else{
+      input_values <<- reactiveValues()
+      input_values[[paste0('input', idx)]] <- data.table(ingredient = default_ingredients[[idx]],
+                                                         amount = default_amounts[[idx]],
+                                                         unit = default_units[[idx]]
+      )
+    }
+  }  
   
   # render input objects ----------------------------------------------------
   # call module UI function for all non-null elements
@@ -35,7 +42,7 @@ server <- function(input, output, session){
                                                 "Don't Know",
                                                 as.character(seq(19)),
                                                 "20 +"),
-                                              selected = "10",
+                                              selected = as.character(utility_rvs$servings),
                                               width = '100%'
                                   )
                            ),
@@ -82,9 +89,11 @@ server <- function(input, output, session){
   observeEvent(input$add_input,{
     if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) < 12){
       
+      # add empty input
       input_values[[paste0('input', utility_rvs$input_counter)]] <- data.table(ingredient = NA,
                                                                                amount = NA,
                                                                                unit = NA)
+      # increment ingredient counter
       utility_rvs$input_counter <- utility_rvs$input_counter + 1
       
     } else {
@@ -143,13 +152,14 @@ server <- function(input, output, session){
                div(style = 'padding:15px',
                    strong("What makes a pancake a pancake?"),
                    br(), br(),
-                   HTML("The most important feature of a paancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
-                   This app will consistently predict that recipes with a high proportion of liquid (i.e. batters, rather than doughs) are pancakes. <br><br>Future iterations of the
-                   model may include data for other types of batters (e.g. brownies) or data about what constitues a baked good.
-                   After all, if you add enough water to a pancake recipe, it's no longer pancakes. It's soup."),
+                   HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
+                   Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
+                   constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
+                   For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
                    br(), br(),
-                   "Other important variables include the number of servings (pancakes in the sample I collected tended to have a lower
-                   yield than other recipes), the proportion of fat in the recipe, and the amount of baking soda."
+                   "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
+                   When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
+                   Selecting this option may yield a prediction that changes each time you click the button."
                )
       )
     )
@@ -210,7 +220,7 @@ server <- function(input, output, session){
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
     
     # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
-    # and it allows random icon selection
+    # and it allows random icon selection (otherwise it will pick randomly once per session)
     
     callModule(custom_value_box,
                'other',
