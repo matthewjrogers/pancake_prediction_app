@@ -5,10 +5,12 @@ ingredient_input <- function(input,
                              input_id
 ){
   
+
   # render inputs -----------------------------------------------------------
   
   output$ingredient_inputs <- renderUI(
-    
+    tagList(
+      shinyjs::useShinyjs(),
     fluidRow(
       column(3,
              pickerInput(session$ns('ingredient'),
@@ -77,6 +79,7 @@ ingredient_input <- function(input,
                               icon = icon('minus-circle')))
       )
     )
+    )
   )
   
   # delete input ------------------------------------------------------------
@@ -104,5 +107,5 @@ ingredient_input <- function(input,
       input_values[[input_id]][, unit := input$unit]
     }
   })
-  
+
 }

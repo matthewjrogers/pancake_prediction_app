@@ -33,16 +33,33 @@ li a{color: #000000;}
   border-color:#301934;
   background-color:#b19cd9;
 }
+
+#check_url{
+  border-color:#301934;
+  background-color:#b19cd9;
+}
+
+#upload{
+  border-color:#301934;
+  background-color:#20b2aa;
+  margin:2px;
+}
+
+
 #help{
   border-color:#301934;
   background-color:#b19cd9;
   margin:2px;
 }
+
+
 #add_input{
   border-color:#301934;
   background-color:#20b2aa;
   margin:2px;
 }
+
+
 .focus{
   background-color:#b19cd9;
 }

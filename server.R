@@ -1,6 +1,6 @@
 server <- function(input, output, session){
   
-  #### reactive values ---------------------------------------------------------
+  # NOTE: important to define rvs in server rather than in global, as it is undesirable to share 'ingredient states' between sessions
   # utility tracking object -------------------------------------------------
   
   utility_rvs <- reactiveValues(input_counter = 7,
@@ -9,10 +9,9 @@ server <- function(input, output, session){
                                 np_icon = sample(not_pancake_icons, 1)
   )
   
-  # create input tracking object --------------------------------------------
+  # create input tracking reactiveValues --------------------------------------------
   
   for(idx in seq(length(default_ingredients))){
-    # important to define rvs here rather than in global, as it is undesirable to share 'ingredient states' between sessions
     if(exists('input_values')){
       input_values[[paste0('input', idx)]] <- data.table(ingredient = default_ingredients[[idx]],
                                                          amount = default_amounts[[idx]],
@@ -28,7 +27,7 @@ server <- function(input, output, session){
   }  
   
   # render input objects ----------------------------------------------------
-  # call module UI function for all non-null elements
+  # input UI
   output$inputs <- renderUI(
     column(12,
            wellPanel(style = 'background-color:#fcfcfc !important;',
@@ -49,7 +48,7 @@ server <- function(input, output, session){
                            column(3),
                            column(3,
                                   div(style = 'padding-top:22px;text-align:center;',
-                                      div(style = "display:inline-block",
+                                      div(style = "display:inline-block;",
                                           actionBttn(
                                             inputId = "add_input",
                                             label = NULL,
@@ -57,17 +56,26 @@ server <- function(input, output, session){
                                             icon = icon("plus-square")
                                           ), 
                                           actionBttn(
+                                            inputId = 'upload',
+                                            label = NULL,
+                                            style = 'simple',
+                                            icon = icon("file-import")
+                                          ),
+                                          actionBttn(
                                             inputId = "help",
                                             label = NULL,
                                             style = "simple",
                                             icon = icon("question-circle")
-                                          )))
+                                          )
+                                      ))
                            )
                          ),
                          hr(),
-                         tagList(lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
-                           do.call(ingredient_input_UI, list(id))
-                         }))
+                         # call module UI function for all non-null elements
+                         tagList(
+                           lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
+                             do.call(ingredient_input_UI, list(id))
+                           }))
                      )
            )
     )
@@ -80,20 +88,20 @@ server <- function(input, output, session){
     })
   })
   
-  # NB: reactiveValues does not support removing a name once created. Setting a reactiveValue to NULL removes the value, 
+  # NOTE: reactiveValues does not support removing a name once created. Setting a reactiveValue to NULL removes the value, 
   # but retains the item name. This is convenient when you wish to initialize an element as NULL, less so when you want to
   # dynamically alter reactiveValues lists. SOLUTION: set value to null, call only for names of non-null elements
   
   # add input ---------------------------------------------------------------
   
   observeEvent(input$add_input,{
-    if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) < 12){
+    if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) < 12){ # limit to 12 ingredients
       
       # add empty input
       input_values[[paste0('input', utility_rvs$input_counter)]] <- data.table(ingredient = NA,
                                                                                amount = NA,
                                                                                unit = NA)
-      # increment ingredient counter
+      # increment ingredient counter to avoid duplicate IDs
       utility_rvs$input_counter <- utility_rvs$input_counter + 1
       
     } else {
@@ -146,56 +154,38 @@ server <- function(input, output, session){
                          <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>, and 
                          <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
                )
-      ),
-      tabPanel("What Matters",
-               value = 'model',
-               div(style = 'padding:15px',
-                   strong("What makes a pancake a pancake?"),
-                   br(), br(),
-                   HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
-                   Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
-                   constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
-                   For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
-                   br(), br(),
-                   "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
-                   When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
-                   Selecting this option may yield a prediction that changes each time you click the button."
-               )
       )
+      # tabPanel("What Matters",
+      #          value = 'model',
+      #          div(style = 'padding:15px',
+      #              strong("What makes a pancake a pancake?"),
+      #              br(), br(),
+      #              HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
+      #              Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
+      #              constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
+      #              For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
+      #              br(), br(),
+      #              "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
+      #              When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
+      #              Selecting this option may yield a prediction that changes each time you click the button."
+      #          )
+      # )
     )
   )
   
   # predict pancakes --------------------------------------------------------
   
+  # process inputs to data frame
+
   observeEvent(input$check_recipe, {
-    # process inputs to data frame
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
     
-    # apply recipe--center and scale data, remove near-zero-variance variables
-    baked_pancakes <- bake(prepped_pancakes, processed_input_data)
-    
-    # make prediction
-    utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
-    
-    # send an alert--let's user know something happened if they put in two consecutive pancakes/not pancakes
-    if(utility_rvs$prediction == 'pancake'){
-      sendSweetAlert(
-        session = session,
-        title = "Pancake!",
-        text = "You can relax - it's probably pancakes",
-        btn_colors = '#20b2aa',
-        type = "success"
-      )
-    } else {
-      sendSweetAlert(
-        session = session,
-        title = "Something else...",
-        text = "That doesn't seem to be pancakes",
-        btn_colors = '#b19cd9',
-        type = "error"
-      )
-    }
+    callModule(predict_pancakes,
+               'main_panel_predict',
+               utility_rvs = utility_rvs,
+               processed_input_data = processed_input_data
+    )
   })
   
   # render prediction output
@@ -216,7 +206,10 @@ server <- function(input, output, session){
              box_icon = 'pancakes.png'
   )
   
-  observeEvent(input$check_recipe,{
+  observeEvent({
+    input$check_recipe
+    input$check_url
+    },{
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
     
     # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
@@ -262,4 +255,78 @@ server <- function(input, output, session){
     )
     
   })
+  
+  # url import --------------------------------------------------------------
+  
+  # import from URL popup
+  observeEvent(input$upload, {
+    showModal(
+      modalDialog(
+        title = strong("Import Recipe From URL"),
+        strong("You don't carry your pancake recipe with you?"),
+        HTML("<br><br>Enter a link to an <em><b>allrecipes.com</b></em> recipe below to find out if it's pancakes. 
+             <br>The predict button will be enabled when you provide a valid URL."),
+        hr(),
+        textInput('url_upload', label = NULL, width = '100%'),
+        footer = tagList(
+          disabled(actionButton("check_url", strong("Am I making pancakes?"))),
+          modalButton("Cancel")
+        ),
+        easyClose = TRUE
+      )
+    )
+  })  
+  
+  observe({ # enable check recipe button if there is text input and that input contains allrecipes.com
+    toggleState("check_url", isTruthy(input$url_upload) && str_detect(input$url_upload, "allrecipes.com"))
+  })
+  
+  
+  observeEvent(input$check_url, {
+    cat('starting to read\n')
+    
+    disable("check_url") # prevent user from spamming check url button
+    
+    show_spinner() # I force a 3 second wait between queries--spinner shows user something is happening
+    
+    input_recipe <- read_safely(input$url_upload)
+    
+    if (is.na(input_recipe)){ # if reading the link failed, send an error
+      hide_spinner()
+      enable("check_url") # re-enable so user can try again
+
+      sendSweetAlert(session = session, type = 'error', 
+                     title = "Sorry - that link didn't work", 
+                     text = "Please try another!")
+      
+    } else if (length(html_nodes(input_recipe, ".added")) == 0){ # if provided link isn't a recipe page, throw an error
+      hide_spinner()
+      enable("check_url") # re-enable so user can try again
+      
+      sendSweetAlert(session = session, type = 'error', 
+                     title = "That link does not appear to have listed ingredients", 
+                     text  = "Please ensure your link goes to a recipe page on allrecipes.com and that you typed the URL correctly")
+    } else{
+      raw_recipe_data <- process_recipe_url(recipe = input_recipe,
+                                               fruits = fruits,
+                                               nuts = nuts,
+                                               veggies = veggies,
+                                               spices = spices,
+                                               coonversion_units = conversion_units
+                                               )
+      
+      processed_input_data <- process_recipe_input(recipe_table = raw_recipe_data[['recipe_df']],
+                                               servings = raw_recipe_data[['num_servings']]
+                                               )
+      
+    }
+    
+    
+    
+    cat('finished reading recipe\n')
+    
+  })
+  
+  
 }
+

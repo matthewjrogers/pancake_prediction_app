@@ -2,6 +2,12 @@
 ui <- fluidPage(
   title = 'Probably Pancakes',
   shinyjs::useShinyjs(),
+  shinybusy::use_busy_spinner(spin = "half-circle", 
+                              position = 'top-right',
+                              color = '#ffffff',
+                              width = '150px',
+                              height = '150px'
+                              ),
   tags$head(tags$link(href = "style.css", rel = "stylesheet"),
             tags$style(HTML("@import url('//fonts.googleapis.com/css?family=Montserrat:200,400,700,900');
                             .selected {background-color:#301934 !important;};"))),
@@ -16,7 +22,9 @@ ui <- fluidPage(
   fluidRow(
     column(5,
            div(uiOutput('info')),
-           uiOutput('prediction_boxes')
+           uiOutput('prediction_boxes'),
+           predict_pancakesUI('main_panel_predict'),
+           predict_pancakesUI('popup_predict')
     ), column(7,
               fluidRow(
                 uiOutput('inputs')
