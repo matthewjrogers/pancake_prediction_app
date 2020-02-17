@@ -1,5 +1,10 @@
 server <- function(input, output, session){
   
+  w <- Waiter$new(
+    html = spin_timer(),
+    id = 'url_upload_modal',
+    color = transparent(.7)
+  )
   # NOTE: important to define rvs in server rather than in global, as it is undesirable to share 'ingredient states' between sessions
   # utility tracking object -------------------------------------------------
   
@@ -176,13 +181,14 @@ server <- function(input, output, session){
   # predict pancakes --------------------------------------------------------
   
   # process inputs to data frame
-
+  
   observeEvent(input$check_recipe, {
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
                                                          input$servings))
     
+    # prediction 
     callModule(predict_pancakes,
-               'main_panel_predict',
+               'predict',
                utility_rvs = utility_rvs,
                processed_input_data = processed_input_data
     )
@@ -206,10 +212,9 @@ server <- function(input, output, session){
              box_icon = 'pancakes.png'
   )
   
-  observeEvent({
-    input$check_recipe
-    input$check_url
-    },{
+  # NOTE: Attempter observeEvent({input$a input$b}, {expr}), but reactivity broke
+  # repeated code as a matter of expediency, but unhappy about it
+  observeEvent(input$check_recipe, {
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
     
     # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
@@ -224,6 +229,20 @@ server <- function(input, output, session){
     )
   })
   
+  observeEvent(input$check_url, {
+    utility_rvs$np_icon <- sample(not_pancake_icons, 1)
+    
+    # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
+    # and it allows random icon selection (otherwise it will pick randomly once per session)
+    
+    callModule(custom_value_box,
+               'other',
+               color = '#b19cd9',
+               box_title = 'not pancakes',
+               box_text = "That doesn't look like pancakes ",
+               box_icon = utility_rvs$np_icon
+    )
+  })
   # faq ---------------------------------------------------------------------
   
   observeEvent(input$help,{
@@ -262,6 +281,7 @@ server <- function(input, output, session){
   observeEvent(input$upload, {
     showModal(
       modalDialog(
+        id = 'url_upload_modal',
         title = strong("Import Recipe From URL"),
         strong("You don't carry your pancake recipe with you?"),
         HTML("<br><br>Enter a link to an <em><b>allrecipes.com</b></em> recipe below to find out if it's pancakes. 
@@ -283,47 +303,62 @@ server <- function(input, output, session){
   
   
   observeEvent(input$check_url, {
-    cat('starting to read\n')
     
     disable("check_url") # prevent user from spamming check url button
     
-    show_spinner() # I force a 3 second wait between queries--spinner shows user something is happening
-    
+    # show_spinner() # I force a 3 second wait between queries--spinner shows user something is happening
+    w$show()
     input_recipe <- read_safely(input$url_upload)
     
     if (is.na(input_recipe)){ # if reading the link failed, send an error
-      hide_spinner()
+      # hide_spinner()
+      w$hide()
       enable("check_url") # re-enable so user can try again
-
+      
       sendSweetAlert(session = session, type = 'error', 
                      title = "Sorry - that link didn't work", 
                      text = "Please try another!")
       
     } else if (length(html_nodes(input_recipe, ".added")) == 0){ # if provided link isn't a recipe page, throw an error
-      hide_spinner()
+      # hide_spinner()
+      w$hide()
       enable("check_url") # re-enable so user can try again
       
       sendSweetAlert(session = session, type = 'error', 
                      title = "That link does not appear to have listed ingredients", 
                      text  = "Please ensure your link goes to a recipe page on allrecipes.com and that you typed the URL correctly")
     } else{
+      # process from URL to normalized data frame
       raw_recipe_data <- process_recipe_url(recipe = input_recipe,
-                                               fruits = fruits,
-                                               nuts = nuts,
-                                               veggies = veggies,
-                                               spices = spices,
-                                               coonversion_units = conversion_units
-                                               )
+                                            fruits = fruits,
+                                            nuts = nuts,
+                                            veggies = veggies,
+                                            spices = spices,
+                                            conversion_units = conversion_units
+      )
       
+      # process from normalized data frame to format suitable for model
       processed_input_data <- process_recipe_input(recipe_table = raw_recipe_data[['recipe_df']],
-                                               servings = raw_recipe_data[['num_servings']]
-                                               )
+                                                   servings = raw_recipe_data[['num_servings']]
+      )
       
+      recipe_title <- html_nodes(input_recipe, "#recipe-main-content") %>% html_text()
+      
+      # hide_spinner()
+      w$hide()
+      updateTextInput(session = session,
+                      'url_upload',
+                      value = ""
+      )
+      removeModal()
+      
+      callModule(predict_pancakes,
+                 'predict',
+                 utility_rvs = utility_rvs,
+                 processed_input_data = processed_input_data,
+                 recipe_title = recipe_title
+      )
     }
-    
-    
-    
-    cat('finished reading recipe\n')
     
   })
   

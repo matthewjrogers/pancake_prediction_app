@@ -2,6 +2,7 @@
 ui <- fluidPage(
   title = 'Probably Pancakes',
   shinyjs::useShinyjs(),
+  use_waiter(),
   shinybusy::use_busy_spinner(spin = "half-circle", 
                               position = 'top-right',
                               color = '#ffffff',
@@ -23,8 +24,7 @@ ui <- fluidPage(
     column(5,
            div(uiOutput('info')),
            uiOutput('prediction_boxes'),
-           predict_pancakesUI('main_panel_predict'),
-           predict_pancakesUI('popup_predict')
+           predict_pancakesUI('predicts')
     ), column(7,
               fluidRow(
                 uiOutput('inputs')

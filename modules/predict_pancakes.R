@@ -7,7 +7,9 @@ predict_pancakes <- function(input,
                              output, 
                              session, 
                              utility_rvs,
-                             processed_input_data){
+                             processed_input_data,
+                             recipe_title = NULL
+){
   
   if (processed_input_data$prop_liquid >= .8){ # crepe recipes run 65%-75% hydration -- anything much thinner than that isn't a recipe
     sendSweetAlert(
@@ -29,7 +31,9 @@ predict_pancakes <- function(input,
       sendSweetAlert(
         session = session,
         title = "Pancake!",
-        text = "You can relax - it's probably pancakes",
+        text = ifelse(isTruthy(recipe_title),
+                      HTML(paste0("You can relax - ", recipe_title," is probably pancakes")),
+                      "You can relax - it's probably pancakes"),
         btn_colors = '#20b2aa',
         type = "success"
       )

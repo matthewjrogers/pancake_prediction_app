@@ -1,13 +1,12 @@
 library(shiny)
 library(shinyWidgets)
 library(shinyjs)
-library(shinycssloaders)
-library(shinybusy)
+# library(shinybusy)
+library(waiter)
 
 library(data.table) # fast data processing and update-by-reference
 library(dplyr)      # data manipulation - same family as rvest 
 library(purrr)      # for possibly()
-library(tidyr)      # data reshaping
 
 library(rvest)   # web data retrieval
 library(stringr) # string manipulation

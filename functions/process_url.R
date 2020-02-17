@@ -78,28 +78,23 @@ process_recipe_url <- function(recipe, fruits, nuts, veggies, spices, conversion
                                   str_detect(units, "tablespoon") ~ numeric_qty * 0.0625,
                                   str_detect(units, "ounce") ~ numeric_qty * 0.125,
                                   str_detect(units, "pint") ~ numeric_qty * 2)) %>%
-    mutate(std_units = case_when(multi_detect(units, conversion_units) ~ "cups",
-                                 ingredient == "eggs"                  ~ "eggs"))
+    mutate(std_units = case_when(multi_detect(units, conversion_units) ~ "cup",
+                                 ingredient == "eggs"                  ~ "egg"))
   
   final_recipe <- cleaned_recipe %>% 
     group_by(ingredient) %>%
-    summarise(id = 1,
-              amount_sum = sum(std_amount), # collapse multiple obs into single value (e.g. white sugar and brown sugar)
-              units_std = first(std_units),
-              servings = as.numeric(recipe_servings),
-              value = paste(value, collapse = ";")
+    summarise(amount = sum(std_amount), # collapse multiple obs into single value (e.g. white sugar and brown sugar)
+              unit = first(std_units)
     ) %>%
     ungroup() %>% 
-    pivot_wider(id = c('id', 'servings'), names_from = 'ingredient', values_from = 'amount_sum') # de-normalize data
-  
-  names(final_recipe) <- to_snake_case(names(final_recipe)) # clean up names
-  
-  output_obj <- list(recipe_df = final_recipe %>% select(-c(id, servings)),
-                     num_servings = ifelse(is.na(final_recipe %>% select(servings) %>% pull()),
-                                           "Don't Know",
-                                           final_recipe %>% select(servings) %>% pull()
-                                           )
-                     )
+    mutate(ingredient = str_replace_all(ingredient, "\\s+", "_"))
+    
+    output_obj <- list(recipe_df = final_recipe,
+                       num_servings = ifelse(is.na(recipe_servings),
+                                             "Don't Know",
+                                             recipe_servings
+                       )
+    )
   
   return(output_obj)
 }
