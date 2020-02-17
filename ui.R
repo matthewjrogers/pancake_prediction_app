@@ -27,7 +27,11 @@ ui <- fluidPage(
            predict_pancakesUI('predicts')
     ), column(7,
               fluidRow(
-                uiOutput('inputs')
+                # withSpinner(
+                  uiOutput('inputs')
+                            # type = 7,
+                            # color = "#b19cd9"
+                            # )
                 )
   )
   )

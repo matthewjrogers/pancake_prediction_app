@@ -1,8 +1,10 @@
 library(shiny)
 library(shinyWidgets)
 library(shinyjs)
+library(shinycssloaders)
 # library(shinybusy)
-library(waiter)
+library(waiter) # uses development version of waiter
+                # remotes::install_github("JohnCoene/waiter")
 
 library(data.table) # fast data processing and update-by-reference
 library(dplyr)      # data manipulation - same family as rvest 

@@ -3,7 +3,7 @@
 
 read_slowly <- function(x, ...){
   output <- read_html(x)
-  Sys.sleep(3)
+  Sys.sleep(4)
   return(output)
 }
 

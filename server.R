@@ -31,59 +31,122 @@ server <- function(input, output, session){
     }
   }  
   
-  # render input objects ----------------------------------------------------
+  # render info section -----------------------------------------------------
+  
+  output$info <- renderUI(
+    tabsetPanel(
+      id = 'info_section_tabs',
+      tabPanel("Predict",
+               value = 'use',
+               div(style = 'padding:15px;',
+                   strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
+                   br(), br(),
+                   strong(HTML('Am I making <em>pancakes?</em>')),
+                   br(), br(),
+                   HTML("Fear no more! This app (probably) has answers!
+                        <br><br>To use the app, either enter a recipe in the inputs or click the green upload button on the right to import a recipe from allrecipes.com.
+                        <br><br><em>To add more ingredients, click the green plus sign. For help using the app, click the question mark icon.</em>"),
+                   br(), br(),
+                   actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
+               )
+      ),
+      tabPanel("Origin",
+               value = 'about',
+               div(style = 'padding:15px;',
+                   strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
+                   br(), br(),
+                   HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe.
+                        Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes,
+                        but trusting my tastebuds yielded much less project than the alternative."),
+                   br(), br(),
+                   strong('Method'),
+                   br(),
+                   'In the spring of 2018 I used R to collect recipes from allrecipes.com. I collected a total of 3,200 recipes,
+                   roughly 400 pancake recipes and 2,800 others.',
+                   br(), br(),
+                   paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
+                          For more on the process, visit '),
+                   tagList(a(HTML('my blog'), href = 'http://www.unconquerablecuriosity.com/2020/01/17/probably-pancakes/', style = "color:#000000;text-decoration:underline;")),
+                   br(),hr(),
+                   HTML('Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, 
+                        <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a>,  
+                        <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>, and 
+                        <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
+               )
+      )
+      # tabPanel("What Matters",
+      #          value = 'model',
+      #          div(style = 'padding:15px',
+      #              strong("What makes a pancake a pancake?"),
+      #              br(), br(),
+      #              HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
+      #              Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
+      #              constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
+      #              For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
+      #              br(), br(),
+      #              "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
+      #              When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
+      #              Selecting this option may yield a prediction that changes each time you click the button."
+      #          )
+      # )
+    )
+  )
+  
+  # render inputs UI ----------------------------------------------------
   # input UI
   output$inputs <- renderUI(
-    column(12,
-           wellPanel(style = 'background-color:#fcfcfc !important;',
-                     div(style = 'padding:15px;',
-                         fluidRow(
-                           column(6,
-                                  align = 'left',
-                                  pickerInput('servings',
-                                              "Servings",
-                                              choices = c(
-                                                "Don't Know",
-                                                as.character(seq(19)),
-                                                "20 +"),
-                                              selected = as.character(utility_rvs$servings),
-                                              width = '100%'
-                                  )
+    
+    # if (input$info_section_tabs != 'explore'){
+      column(12,
+             wellPanel(style = 'background-color:#fcfcfc !important;',
+                       div(style = 'padding:15px;',
+                           fluidRow(
+                             column(6,
+                                    align = 'left',
+                                    pickerInput('servings',
+                                                "Servings",
+                                                choices = c(
+                                                  "Don't Know",
+                                                  as.character(seq(19)),
+                                                  "20 +"),
+                                                selected = as.character(utility_rvs$servings),
+                                                width = '100%'
+                                    )
+                             ),
+                             column(3),
+                             column(3,
+                                    div(style = 'padding-top:22px;text-align:center;',
+                                        div(style = "display:inline-block;",
+                                            actionBttn(
+                                              inputId = "add_input",
+                                              label = NULL,
+                                              style = "simple",
+                                              icon = icon("plus-square")
+                                            ), 
+                                            actionBttn(
+                                              inputId = 'upload',
+                                              label = NULL,
+                                              style = 'simple',
+                                              icon = icon("file-upload")
+                                            ),
+                                            actionBttn(
+                                              inputId = "help",
+                                              label = NULL,
+                                              style = "simple",
+                                              icon = icon("question-circle")
+                                            )
+                                        ))
+                             )
                            ),
-                           column(3),
-                           column(3,
-                                  div(style = 'padding-top:22px;text-align:center;',
-                                      div(style = "display:inline-block;",
-                                          actionBttn(
-                                            inputId = "add_input",
-                                            label = NULL,
-                                            style = "simple",
-                                            icon = icon("plus-square")
-                                          ), 
-                                          actionBttn(
-                                            inputId = 'upload',
-                                            label = NULL,
-                                            style = 'simple',
-                                            icon = icon("file-import")
-                                          ),
-                                          actionBttn(
-                                            inputId = "help",
-                                            label = NULL,
-                                            style = "simple",
-                                            icon = icon("question-circle")
-                                          )
-                                      ))
-                           )
-                         ),
-                         hr(),
-                         # call module UI function for all non-null elements
-                         tagList(
-                           lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
-                             do.call(ingredient_input_UI, list(id))
-                           }))
-                     )
-           )
-    )
+                           hr(),
+                           # call module UI function for all non-null elements
+                           tagList(
+                             lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
+                               do.call(ingredient_input_UI, list(id))
+                             }))
+                       )
+             )
+      )
   )
   
   # callModule for all non-null elements in reactive vales
@@ -117,66 +180,6 @@ server <- function(input, output, session){
       )
     }
   })
-  
-  # render info section -----------------------------------------------------
-  
-  output$info <- renderUI(
-    tabsetPanel(
-      tabPanel("Predict",
-               value = 'use',
-               div(style = 'padding:15px;',
-                   strong(HTML("We've all been there. You're cooking happily, when suddenly you're struck by an unpleasant suspicion:")),
-                   br(), br(),
-                   strong(HTML('Am I making <em>pancakes?</em>')),
-                   br(), br(),
-                   HTML("Fear no more! This app (probably) has answers!
-                        <br><br>Enter a recipe in the inputs and click the button below to answer the all-important question - am I making pancakes?
-                         <br><br><em>To add more ingredients, click the green plus sign. For help using the app, click the question mark icon.</em>"),
-                   br(), br(),
-                   actionButton("check_recipe", strong("Am I making pancakes?"), style = "width:100%")
-               )
-      ),
-      tabPanel("Origin",
-               value = 'about',
-               div(style = 'padding:15px;',
-                   strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
-                   br(), br(),
-                   HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe.
-                     Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes,
-                          but trusting my tastebuds yielded much less project than the alternative."),
-                   br(), br(),
-                   strong('Method'),
-                   br(),
-                   'In the spring of 2018 I used R to collect recipes from allrecipes.com. I collected a total of 3,200 recipes,
-                     roughly 400 pancake recipes and 2,800 others.',
-                   br(), br(),
-                   paste0('Using this data, I trained a machine learning algorithm to classify recipes as pancakes or not pancakes.
-                            For more on the process, visit '),
-                   tagList(a(HTML('my blog'), href = 'http://www.unconquerablecuriosity.com/2020/01/17/probably-pancakes/', style = "color:#000000;text-decoration:underline;")),
-                   br(),hr(),
-                   HTML('Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a>, 
-                        <a href="https://www.flaticon.com/authors/good-ware" title="Good Ware">Good Ware</a>,  
-                         <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>, and 
-                         <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
-               )
-      )
-      # tabPanel("What Matters",
-      #          value = 'model',
-      #          div(style = 'padding:15px',
-      #              strong("What makes a pancake a pancake?"),
-      #              br(), br(),
-      #              HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
-      #              Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
-      #              constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
-      #              For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
-      #              br(), br(),
-      #              "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
-      #              When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
-      #              Selecting this option may yield a prediction that changes each time you click the button."
-      #          )
-      # )
-    )
-  )
   
   # predict pancakes --------------------------------------------------------
   
@@ -297,7 +300,8 @@ server <- function(input, output, session){
     )
   })  
   
-  observe({ # enable check recipe button if there is text input and that input contains allrecipes.com
+  # enable check recipe button if there is text input and that input contains allrecipes.com
+  observe({ 
     toggleState("check_url", isTruthy(input$url_upload) && str_detect(input$url_upload, "allrecipes.com"))
   })
   
@@ -306,7 +310,7 @@ server <- function(input, output, session){
     
     disable("check_url") # prevent user from spamming check url button
     
-    # show_spinner() # I force a 3 second wait between queries--spinner shows user something is happening
+    # I force a 4 second wait between queries--spinner shows user something is happening
     w$show()
     input_recipe <- read_safely(input$url_upload)
     
