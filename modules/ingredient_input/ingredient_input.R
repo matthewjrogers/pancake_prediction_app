@@ -88,18 +88,25 @@ ingredient_input <- function(input,
   
   observeEvent(input$ingredient, {
     if(input$ingredient == 'eggs'){
-      updatePickerInput(session = session, inputId =  'unit', selected =  'egg', choices = c('Eggs' = 'egg'))
+      updatePickerInput(session = session, 
+                        inputId =  'unit', 
+                        selected =  'egg', 
+                        choices = c('Eggs' = 'egg'))
     } else if (input$ingredient %in% c('fruit', 'vegetable')){
-      updatePickerInput(session = session, inputId =  'unit', choices = c('Cup' = 'cup', 
-                                                                          'Ounce' = 'oz', 
-                                                                          "Piece of Fruit" = 'fruit'))
+      updatePickerInput(session = session, 
+                        inputId =  'unit', 
+                        choices = c('Cup' = 'cup', 
+                                    'Ounce' = 'oz', 
+                                    "Piece of Fruit" = 'fruit'))
     } else {
-      updatePickerInput(session = session, inputId =  'unit', choices = c('Teaspoon' = 'tsp', 
-                                                                          'Tablespoon' = 'tbsp', 
-                                                                          'Cup' = 'cup', 
-                                                                          'Ounce' = 'oz'),
+      updatePickerInput(session = session, 
+                        inputId =  'unit', 
+                        choices = c('Teaspoon' = 'tsp', 
+                                    'Tablespoon' = 'tbsp', 
+                                    'Cup' = 'cup', 
+                                    'Ounce' = 'oz'),
                         selected = input$unit
-                        )
+      )
     }
   })
   

@@ -53,11 +53,11 @@ server <- function(input, output, session){
       tabPanel("Origin",
                value = 'about',
                div(style = 'padding:15px;',
-                   strong(HTML('This app begins with a recipe on a scrap of paper labeled "probably pancakes."')),
+                   strong(HTML("In our recipe book, my wife and I have a recipe labeled “probably pancakes”. My wife transcribed the recipe at some point in college, sans label, and eventually it acquired its probabilistic identification.")),
                    br(), br(),
-                   HTML("Eventually, I decided it was time to take a definitive stand on the nature of the recipe.
-                        Admittedly, the recipe yielded fluffy, flat cakes that <em>looked</em> a lot like pancakes and <em>tasted</em> a lot like pancakes,
-                        but trusting my tastebuds yielded much less project than the alternative."),
+                   HTML("I suppose some people would be satisfied that since the recipe yields fluffy, flat cakes that go really well with maple syrup it is, in fact, a pancake recipe.
+
+                        I am not one of those people. About a year ago, I realized that it was probably possible to predict whether or not a recipe was for pancakes based solely on the quantities, types, and proportions of ingredients in the recipe."),
                    br(), br(),
                    strong('Method'),
                    br(),
@@ -74,83 +74,65 @@ server <- function(input, output, session){
                         <a href="https://www.flaticon.com/authors/eucalyp" title="Eucalyp">Eucalyp</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>')
                )
       )
-      # tabPanel("What Matters",
-      #          value = 'model',
-      #          div(style = 'padding:15px',
-      #              strong("What makes a pancake a pancake?"),
-      #              br(), br(),
-      #              HTML("The most important feature of a pancake recipe, as far as this model is concerned, is the proportion of liquid in the recipe.
-      #              Batters (i.e. recipes with a high proportion of liquid) with a low proportion of fat and sugar are consistently recognized as pancakes by the model. <br><br>Note that the dataset did not contain information on what
-      #              constitutes a recipe in the first place, so taking the above rule of thumb to the extreme can yield silly predictions. 
-      #              For example, if you change the default recipe from 1.25 cups of milk to 1,250 cups of milk, the app will still predict that the recipe is pancakes."),
-      #              br(), br(),
-      #              "Another important variable is the number of servings. Pancake recipes tended to have a lower number of servings than other recipes in the data I collected.
-      #              When 'Don't Know' is selected from the drop down, the app randomly selects a value between 6 and 12 (the range of most common values among recipes I collected).
-      #              Selecting this option may yield a prediction that changes each time you click the button."
-      #          )
-      # )
     )
   )
+  # disable prediction if there are 1 or fewer ingredient -------------------
+  
+  observe({ # prefer shinyjs::toggleState
+    if(length(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]) > 1){
+      enable('check_recipe')
+    } else {
+      disable('check_recipe')
+    }
+  })
   
   # render inputs UI ----------------------------------------------------
   # input UI
   output$inputs <- renderUI(
-    
-    # if (input$info_section_tabs != 'explore'){
-      column(12,
-             wellPanel(style = 'background-color:#fcfcfc !important;',
-                       div(style = 'padding:15px;',
-                           fluidRow(
-                             column(6,
-                                    align = 'left',
-                                    pickerInput('servings',
-                                                "Servings",
-                                                choices = c(
-                                                  "Don't Know",
-                                                  as.character(seq(19)),
-                                                  "20 +"),
-                                                selected = as.character(utility_rvs$servings),
-                                                width = '100%'
-                                    )
-                             ),
-                             column(3),
-                             column(3,
-                                    div(style = 'padding-top:22px;text-align:center;',
-                                        div(style = "display:inline-block;",
-                                            actionBttn(
-                                              inputId = "add_input",
-                                              label = NULL,
-                                              style = "simple",
-                                              icon = icon("plus-square")
-                                            ), 
-                                            actionBttn(
-                                              inputId = 'upload',
-                                              label = NULL,
-                                              style = 'simple',
-                                              icon = icon("file-upload")
-                                            ),
-                                            actionBttn(
-                                              inputId = "help",
-                                              label = NULL,
-                                              style = "simple",
-                                              icon = icon("question-circle")
-                                            )
-                                        ))
-                             )
+    column(12,
+           wellPanel(style = 'background-color:#fcfcfc !important;',
+                     div(style = 'padding:15px;',
+                         fluidRow(
+                           column(6,
+                                  align = 'left'
                            ),
-                           hr(),
-                           # call module UI function for all non-null elements
-                           tagList(
-                             lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
-                               do.call(ingredient_input_UI, list(id))
-                             }))
-                       )
-             )
-      )
+                           column(3),
+                           column(3,
+                                  div(style = 'padding-top:22px;text-align:center;',
+                                      div(style = "display:inline-block;",
+                                          actionBttn(
+                                            inputId = "add_input",
+                                            label = NULL,
+                                            style = "simple",
+                                            icon = icon("plus-square")
+                                          ), 
+                                          actionBttn(
+                                            inputId = 'upload',
+                                            label = NULL,
+                                            style = 'simple',
+                                            icon = icon("file-upload")
+                                          ),
+                                          actionBttn(
+                                            inputId = "help",
+                                            label = NULL,
+                                            style = "simple",
+                                            icon = icon("question-circle")
+                                          )
+                                      ))
+                           )
+                         ),
+                         hr(),
+                         tagList( # call module UI function for all non-null elements
+                           lapply(sort(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)]), function(id){
+                             do.call(ingredient_input_UI, list(id))
+                           }))
+                     )
+           )
+    )
   )
   
-  # callModule for all non-null elements in reactive vales
-  observe({
+  
+  observe({ # callModule for all non-null elements in reactive vales
     lapply(names(input_values)[!sapply(reactiveValuesToList(input_values), is.null)], function(id){
       callModule(ingredient_input, id, input_values, input_id = id)
     })
@@ -172,7 +154,7 @@ server <- function(input, output, session){
       # increment ingredient counter to avoid duplicate IDs
       utility_rvs$input_counter <- utility_rvs$input_counter + 1
       
-    } else {
+    } else { # stop the user from adding infinite inputs
       sendSweetAlert(session = session,
                      title = "Too many ingredients!",
                      type = 'error',
@@ -187,7 +169,11 @@ server <- function(input, output, session){
   
   observeEvent(input$check_recipe, {
     processed_input_data <- isolate(process_recipe_input(reactiveValuesToList(input_values) %>% bind_rows(),
-                                                         input$servings))
+                                                         # input$servings,
+                                                         liquids,
+                                                         fats,
+                                                         all_relevant_vars
+    ))
     
     # prediction 
     callModule(predict_pancakes,
@@ -215,7 +201,7 @@ server <- function(input, output, session){
              box_icon = 'pancakes.png'
   )
   
-  # NOTE: Attempter observeEvent({input$a input$b}, {expr}), but reactivity broke
+  # NOTE: Attempted observeEvent({input$a input$b}, {expr}), but reactivity broke
   # repeated code as a matter of expediency, but unhappy about it
   observeEvent(input$check_recipe, {
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
@@ -235,8 +221,7 @@ server <- function(input, output, session){
   observeEvent(input$check_url, {
     utility_rvs$np_icon <- sample(not_pancake_icons, 1)
     
-    # calling modules from an observeEvent is not ideal, but cost is low for lightweight modules like this one,
-    # and it allows random icon selection (otherwise it will pick randomly once per session)
+    # see above note re. modules and observeEvent
     
     callModule(custom_value_box,
                'other',
@@ -252,10 +237,6 @@ server <- function(input, output, session){
     showModal(
       modalDialog(
         title = strong("Recipe Input FAQs"),
-        strong("What if I don't know how many servings my recipe makes?"),
-        tags$ul(HTML("<li>That's an option you can select in the drop down menu. The app will randomly select a number of servings
-                servings between 6 and 12 (the range of most common values among recipes I collected).
-                Note that this may cause the app's prediction for a recipe to change.</li>")),
         strong("My recipe has flour, but it isn't wheat flour - where should I list it?"),
         tags$ul(HTML("<li>For the purposes of the model, it's all the same. Add it as flour</li>")),
         strong('When should I use the unit "Piece of Fruit" listed in the dropdown?'),
@@ -300,8 +281,8 @@ server <- function(input, output, session){
     )
   })  
   
-  # enable check recipe button if there is text input and that input contains allrecipes.com
-  observe({ 
+
+  observe({ # enable check recipe button if there is text input and that input contains allrecipes.com
     toggleState("check_url", isTruthy(input$url_upload) && str_detect(input$url_upload, "allrecipes.com"))
   })
   
@@ -315,7 +296,6 @@ server <- function(input, output, session){
     input_recipe <- read_safely(input$url_upload)
     
     if (is.na(input_recipe)){ # if reading the link failed, send an error
-      # hide_spinner()
       w$hide()
       enable("check_url") # re-enable so user can try again
       
@@ -324,14 +304,13 @@ server <- function(input, output, session){
                      text = "Please try another!")
       
     } else if (length(html_nodes(input_recipe, ".added")) == 0){ # if provided link isn't a recipe page, throw an error
-      # hide_spinner()
       w$hide()
       enable("check_url") # re-enable so user can try again
       
       sendSweetAlert(session = session, type = 'error', 
                      title = "That link does not appear to have listed ingredients", 
                      text  = "Please ensure your link goes to a recipe page on allrecipes.com and that you typed the URL correctly")
-    } else{
+    } else {
       # process from URL to normalized data frame
       raw_recipe_data <- process_recipe_url(recipe = input_recipe,
                                             fruits = fruits,
@@ -343,17 +322,17 @@ server <- function(input, output, session){
       
       # process from normalized data frame to format suitable for model
       processed_input_data <- process_recipe_input(recipe_table = raw_recipe_data[['recipe_df']],
-                                                   servings = raw_recipe_data[['num_servings']]
+                                                   # servings = raw_recipe_data[['num_servings']],
+                                                   liquids,
+                                                   fats,
+                                                   all_relevant_vars
       )
       
-      recipe_title <- html_nodes(input_recipe, "#recipe-main-content") %>% html_text()
+      recipe_title <- html_nodes(input_recipe, "#recipe-main-content") %>% html_text() # pull recipe title for popup
       
       # hide_spinner()
       w$hide()
-      updateTextInput(session = session,
-                      'url_upload',
-                      value = ""
-      )
+      updateTextInput(session = session, 'url_upload', value = "") # reset input value
       removeModal()
       
       callModule(predict_pancakes,

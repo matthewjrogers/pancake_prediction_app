@@ -1,9 +1,9 @@
 
 process_recipe_url <- function(recipe, fruits, nuts, veggies, spices, conversion_units){
   
-  recipe_ingredients <- html_nodes(recipe,".added") %>% 
+  recipe_ingredients <- html_nodes(recipe, ".added") %>% 
     html_text() %>% # coerce from xml to text
-    as_tibble()     # to tibble (all processing here in tidyverse )
+    as_tibble()     # to tibble (all processing here in tidyverse for consistency with rvest)
   
   recipe_servings <- recipe %>% 
     html_nodes(".subtext") %>%

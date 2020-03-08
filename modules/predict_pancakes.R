@@ -1,6 +1,6 @@
 predict_pancakesUI <- function(id){
   ns <- NS(id)
-  div()
+  div() # could not find a way around having a cursory UI for the module
 }
 
 predict_pancakes <- function(input, 
@@ -41,7 +41,9 @@ predict_pancakes <- function(input,
       sendSweetAlert(
         session = session,
         title = "Something else...",
-        text = "That doesn't seem to be pancakes",
+        text = ifelse(isTruthy(recipe_title),
+                      HTML(paste0(recipe_title," does not look like pancakes")),
+                      "That doesn't seem to be pancakes"),
         btn_colors = '#b19cd9',
         type = "error"
       )
