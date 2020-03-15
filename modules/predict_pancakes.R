@@ -20,11 +20,17 @@ predict_pancakes <- function(input,
       type = "error"
     )
   } else {
-    # apply recipe--center and scale data, remove near-zero-variance variables
-    baked_pancakes <- bake(prepped_pancakes, processed_input_data)
-    
-    # make prediction
-    utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
+    if (processed_input_data[, rowSums(.SD)] == 0){ 
+      # if none of the important ingredients show up, it's not a pancake, or possibly even a baked good
+      # we don't need the model to know that
+      utility_rvs$prediction <- 'other'
+    } else {
+      # apply recipe--center and scale data, remove near-zero-variance variables
+      baked_pancakes <- bake(prepped_pancakes, processed_input_data)
+      
+      # make prediction
+      utility_rvs$prediction <- as.character(predict(rf_model, baked_pancakes))
+    }
     
     # send an alert--let's user know something happened if they put in two consecutive pancakes/not pancakes
     if(utility_rvs$prediction == 'pancake'){

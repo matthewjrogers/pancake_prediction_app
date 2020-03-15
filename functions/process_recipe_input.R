@@ -21,8 +21,9 @@ process_recipe_input <- function(recipe_table, liquids, fats, all_relevant_vars)
   std_amount_tbl[, total_fat := ifelse(is.na(total_fat), 0, total_fat)] # handle NA for fatless recipes
   std_amount_tbl[, total_liquid := ifelse(is.na(total_liquid), 0, total_liquid)] # shouldn't have liquidless recipes, but the app shouldn't crash as a result
   
-  std_amount_tbl[, prop_liquid := total_liquid/total_volume]
-  std_amount_tbl[, prop_fat := total_fat/total_volume]
+  std_amount_tbl[, prop_liquid := ifelse(total_volume == 0, 0, total_liquid/total_volume)]
+  std_amount_tbl[, prop_fat := ifelse(total_volume == 0, 0, total_fat/total_volume)]
+  
   
   std_amount_tbl[, all_relevant_vars[!all_relevant_vars %in% names(std_amount_tbl)] := 0]
   

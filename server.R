@@ -303,13 +303,15 @@ server <- function(input, output, session){
                      title = "Sorry - that link didn't work", 
                      text = "Please try another!")
       
-    } else if (length(html_nodes(input_recipe, ".added")) == 0){ # if provided link isn't a recipe page, throw an error
+    } else if (sum(length(html_nodes(input_recipe, ".added")), 
+                   length(html_nodes(input_recipe, '.ingredients-item-name'))) == 0){ # if provided link isn't a recipe page, throw an error
       w$hide()
       enable("check_url") # re-enable so user can try again
       
       sendSweetAlert(session = session, type = 'error', 
                      title = "That link does not appear to have listed ingredients", 
-                     text  = "Please ensure your link goes to a recipe page on allrecipes.com and that you typed the URL correctly")
+                     text  = "Please ensure your link goes to a recipe page on allrecipes.com and that you typed the URL correctly. 
+                     Note that due to variations in the structure of allrecipes.com recipe pages, I cannot guarantee this app will be able to read all recipes listed on the website.")
     } else {
       # process from URL to normalized data frame
       raw_recipe_data <- process_recipe_url(recipe = input_recipe,

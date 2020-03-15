@@ -1,16 +1,37 @@
 
 process_recipe_url <- function(recipe, fruits, nuts, veggies, spices, conversion_units){
   
-  recipe_ingredients <- html_nodes(recipe, ".added") %>% 
-    html_text() %>% # coerce from xml to text
-    as_tibble()     # to tibble (all processing here in tidyverse for consistency with rvest)
+  if(length(html_nodes(recipe, ".added")) > 0){
+    
+    recipe_ingredients <- html_nodes(recipe, ".added") %>% 
+      html_text() %>% # coerce from xml to text
+      as_tibble()     # to tibble (all processing here in tidyverse for consistency with rvest)
+    
+  } else { # some recipes follow a different format
+    
+    recipe_ingredients <- html_nodes(recipe, '.ingredients-item-name') %>% 
+      html_text() %>% # coerce from xml to text
+      as_tibble()     # to tibble (all processing here in tidyverse for consistency with rvest)
+    
+    recipe_ingredients <- recipe_ingredients %>% 
+      mutate(value = str_replace_all(value, '½', '1/2'),
+             value = str_replace_all(value, '¼', '1/4'),
+             value = str_replace_all(value, '⅔', '2/3'),
+             value = str_replace_all(value, '⅛', '2/3'),
+             value = str_replace_all(value, ' ', ' '), # thin space character
+             value = trimws(value)
+      )
+  }
   
-  recipe_servings <- recipe %>% 
-    html_nodes(".subtext") %>%
-    html_text() %>% 
-    str_extract("(?<=yields\\s)\\d+") %>% 
-    ifelse(identical(., character(0)), NA, .)
-  
+  if(length(html_nodes(recipe, ".added")) > 0){
+    recipe_servings <- recipe %>%
+      html_nodes(".subtext") %>%
+      html_text() %>%
+      str_extract("(?<=yields\\s)\\d+") %>%
+      ifelse(identical(., character(0)), NA, .)
+  } else {
+    recipe_servings <- NA
+  }
   
   cleaned_recipe <- recipe_ingredients %>%  
     mutate(value = tolower(value)) %>% 
@@ -88,13 +109,13 @@ process_recipe_url <- function(recipe, fruits, nuts, veggies, spices, conversion
     ) %>%
     ungroup() %>% 
     mutate(ingredient = str_replace_all(ingredient, "\\s+", "_"))
-    
-    output_obj <- list(recipe_df = final_recipe,
-                       num_servings = ifelse(is.na(recipe_servings),
-                                             "Don't Know",
-                                             recipe_servings
-                       )
-    )
+  
+  output_obj <- list(recipe_df = final_recipe,
+                     num_servings = ifelse(is.na(recipe_servings),
+                                           "Don't Know",
+                                           recipe_servings
+                     )
+  )
   
   return(output_obj)
 }
