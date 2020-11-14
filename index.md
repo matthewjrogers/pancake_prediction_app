@@ -1,37 +1,15 @@
-## Welcome to GitHub Pages
+## Probably pancakes?
 
-You can use the [editor on GitHub](https://github.com/matthewjrogers/pancake_prediction_app/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+In our recipe book, my wife and I have a recipe labeled “probably pancakes”. My wife transcribed the recipe at some point in college, sans label, and eventually it acquired its probabilistic identification. I suppose some people would be satisfied that since the recipe yields fluffy, flat cakes that go really well with maple syrup it is, in fact, a pancake recipe.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+I am not one of those people. About a year ago, I realized that it was probably possible to predict whether or not a recipe was for pancakes based solely on the quantities, types, and proportions of ingredients in the recipe. 
 
-### Markdown
+### This spawned a two part project.
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+First, I needed to [collect some data](https://github.com/matthewjrogers/Pancake_ID), so in 2018 I wrote some scripts to scrape recipes from allrecipes.com. These included all recipes listed in the "pancakes" and "bread" categories. The "bread" category actually contained a variety of recipes, making it a useful and convenient comparison category. 
 
-```markdown
-Syntax highlighted code block
+I then trained a basic random forest to classify these recipes as either pancakes or not pancakes. Combined with SMOTE to balance the data, this yielded an F1 score  over .90 on unseen validation data.
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/matthewjrogers/pancake_prediction_app/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
